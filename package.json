@@ -1,0 +1,34 @@
+{
+	"name": "@iveelsm/astro-font-loader",
+	"description": "Loads fonts into astro build artifacts from custom fonts packages",
+	"author": "Mikey Sleevi <development@frogman.simplelogin.com>",
+	"license": "MIT",
+	"type": "module",
+	"version": "0.0.1",
+	"main": "src/index.js",
+	"keywords": [
+		"astro",
+		"fonts",
+		"plugin"
+	],
+	"homepage": "https://github.com/iveelsm/astro-font-loader#readme",
+	"bugs": {
+		"url": "https://github.com/iveelsm/astro-font-loader/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/iveelsm/astro-font-loader.git"
+	},
+	"scripts": {
+		"lint": "prettier --check . && eslint .",
+		"lint:fix": "prettier --write . && eslint . --fix"
+	},
+	"devDependencies": {
+		"@typescript-eslint/eslint-plugin": "^8.54.0",
+		"@typescript-eslint/parser": "^8.54.0",
+		"eslint": "^9.39.2",
+		"eslint-plugin-perfectionist": "^5.4.0",
+		"typescript": "^5.9.3",
+		"typescript-eslint": "^8.54.0"
+	}
+}
