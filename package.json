@@ -23,6 +23,7 @@
 	},
 	"scripts": {
 		"build": "tsc .",
+		"test": "node --import tsx --test tests/**/*.test.ts",
 		"lint": "prettier --check . && eslint .",
 		"lint:fix": "prettier --write . && eslint . --fix"
 	},
@@ -33,6 +34,7 @@
 		"@typescript-eslint/parser": "^8.54.0",
 		"eslint": "^9.39.2",
 		"eslint-plugin-perfectionist": "^5.4.0",
+		"tsx": "^4.21.0",
 		"typescript": "^5.9.3",
 		"typescript-eslint": "^8.54.0"
 	},
