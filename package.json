@@ -1,5 +1,5 @@
 {
-	"name": "@iveelsm/astro-font-loader",
+	"name": "astro-font-loader",
 	"description": "Loads fonts into astro build artifacts from custom fonts packages",
 	"author": "Mikey Sleevi <development@frogman.simplelogin.com>",
 	"license": "MIT",
