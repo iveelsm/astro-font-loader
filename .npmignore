@@ -1,0 +1,12 @@
+.github
+src/
+node_modules/
+
+.gitignore
+.nvmrc
+eslint.config.js
+package-lock.json
+renovate.json5
+tsconfig.json
+
+tests/
