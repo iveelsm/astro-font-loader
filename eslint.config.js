@@ -30,5 +30,11 @@ export default [
 				},
 			],
 		},
+		settings: {
+			perfectionist: {
+				type: "line-length",
+				partitionByComment: true,
+			},
+		},
 	},
 ];
