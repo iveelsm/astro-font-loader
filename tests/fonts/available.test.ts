@@ -1,8 +1,9 @@
-import { describe, it, beforeEach, afterEach } from "node:test";
 import assert from "node:assert";
 import { mkdirSync, writeFileSync, rmSync } from "node:fs";
-import { join } from "node:path";
 import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { describe, it, beforeEach, afterEach } from "node:test";
+
 import { getAvailableFonts } from "../../src/fonts/available";
 
 describe("getAvailableFonts", () => {
@@ -58,7 +59,10 @@ describe("getAvailableFonts", () => {
 		const result = getAvailableFonts(testDir);
 
 		assert.strictEqual(result.length, 1);
-		assert.strictEqual(result[0].relativePath, "Roboto/Roboto-Regular.woff2");
+		assert.strictEqual(
+			result[0].relativePath,
+			"Roboto/Roboto-Regular.woff2",
+		);
 	});
 
 	it("should include correct relative paths for fonts in root src", () => {

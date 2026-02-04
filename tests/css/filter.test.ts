@@ -1,5 +1,6 @@
-import { describe, it } from "node:test";
 import assert from "node:assert";
+import { describe, it } from "node:test";
+
 import { filterCssFontFaces } from "../../src/css/filter";
 
 describe("filterCssFontFaces", () => {
@@ -41,7 +42,8 @@ describe("filterCssFontFaces", () => {
 	});
 
 	it("should keep only font-face blocks matching the filter", () => {
-		const filter = (filename: string) => filename === "OpenSans-Regular.woff2";
+		const filter = (filename: string) =>
+			filename === "OpenSans-Regular.woff2";
 		const result = filterCssFontFaces(sampleCss, filter);
 
 		assert.ok(result.includes("OpenSans-Regular.woff2"));

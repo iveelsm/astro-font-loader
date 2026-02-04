@@ -1,12 +1,12 @@
-import type { AstroIntegrationLogger } from "astro";
-import type { FontInfo } from "./fonts/fontInfo";
-
 import { existsSync, readFileSync } from "node:fs";
 
-import { getAvailableFonts } from "./fonts/available";
-import { getFontsPackageInfo } from "./fonts";
+import type { AstroIntegrationLogger } from "astro";
+
 import { filterCssFontFaces } from "./css/filter";
 import { transformCss } from "./css/transform";
+import { getFontsPackageInfo } from "./fonts";
+import { getAvailableFonts } from "./fonts/available";
+import type { FontInfo } from "./fonts/fontInfo";
 
 export type ConfigSetupResult = {
 	fontsInfo: { fontsDir: string; cssPath: string } | null;
@@ -19,7 +19,7 @@ export function astroConfigSetup(
 	outputDir: string,
 	filter?: (filename: string) => boolean,
 ): ConfigSetupResult {
-	let fontsInfo = getFontsPackageInfo("@iveelsm/fonts");
+	const fontsInfo = getFontsPackageInfo("@iveelsm/fonts");
 	let availableFonts: FontInfo[] = [];
 	let transformedCss = "";
 

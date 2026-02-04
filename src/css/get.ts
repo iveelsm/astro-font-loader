@@ -1,15 +1,19 @@
 import { existsSync, readFileSync } from "node:fs";
+
+import { FontsPackageInfo } from "../fonts";
 import { FontsIntegrationOptions } from "../integrationOptions";
 import { filterCssFontFaces } from "./filter";
 import { transformCss } from "./transform";
-import { FontsPackageInfo } from "../fonts";
 
 export function getFontsCss(
 	options: FontsIntegrationOptions = {},
 	fontPackageInformation: FontsPackageInfo | null,
 ): string {
 	const { filter, outputDir = "fonts" } = options;
-	if (!fontPackageInformation || !existsSync(fontPackageInformation.cssPath)) {
+	if (
+		!fontPackageInformation ||
+		!existsSync(fontPackageInformation.cssPath)
+	) {
 		return "";
 	}
 

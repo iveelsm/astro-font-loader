@@ -1,5 +1,6 @@
-import { describe, it } from "node:test";
 import assert from "node:assert";
+import { describe, it } from "node:test";
+
 import { transformCss } from "../../src/css/transform";
 
 describe("transformCss", () => {
@@ -58,7 +59,7 @@ describe("transformCss", () => {
 	});
 
 	it("should handle URLs without quotes", () => {
-		const css = '@font-face { src: url(./test/Font.woff2); }';
+		const css = "@font-face { src: url(./test/Font.woff2); }";
 		const result = transformCss(css, "fonts");
 
 		assert.ok(result.includes('url("/fonts/Font.woff2")'));

@@ -1,6 +1,7 @@
-import { join } from "node:path";
-import { FontInfo } from "./fontInfo";
 import { existsSync, readdirSync } from "node:fs";
+import { join } from "node:path";
+
+import { FontInfo } from "./fontInfo";
 import { getFontsPackageInfo } from "./package";
 
 export function getAvailableFonts(fontsDir: string): FontInfo[] {
@@ -46,6 +47,5 @@ export function getAvailableFontNames(): string[] {
 		return [];
 	}
 
-	return getAvailableFonts(fontsInfo.fontsDir)
-		.map((f) => f.filename);
+	return getAvailableFonts(fontsInfo.fontsDir).map((f) => f.filename);
 }

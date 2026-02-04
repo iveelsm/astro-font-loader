@@ -1,5 +1,3 @@
 import { getFontsCss } from "./get";
 
-export {
-	getFontsCss
-}
+export { getFontsCss };

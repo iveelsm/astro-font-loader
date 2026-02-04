@@ -1,10 +1,13 @@
-import { describe, it } from "node:test";
 import assert from "node:assert";
+import { describe, it } from "node:test";
+
 import { getFontsPackageInfo } from "../../src/fonts/package";
 
 describe("getFontsPackageInfo", () => {
 	it("should return null for non-existent package", () => {
-		const result = getFontsPackageInfo("@non-existent/package-that-does-not-exist");
+		const result = getFontsPackageInfo(
+			"@non-existent/package-that-does-not-exist",
+		);
 		assert.strictEqual(result, null);
 	});
 

@@ -1,9 +1,10 @@
-import type { AstroIntegrationLogger } from "astro";
-import type { FontInfo } from "./fonts/fontInfo";
-
+import { copyFileSync, existsSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "url";
-import { copyFileSync, existsSync, mkdirSync } from "node:fs";
+
+import type { AstroIntegrationLogger } from "astro";
+
+import type { FontInfo } from "./fonts/fontInfo";
 
 export function astroBuildDone(
 	dir: URL,
@@ -32,5 +33,7 @@ export function astroBuildDone(
 		}
 	}
 
-	logger.info(`Copied ${availableFonts.length} font file(s) to ${outputDir}/`);
+	logger.info(
+		`Copied ${availableFonts.length} font file(s) to ${outputDir}/`,
+	);
 }

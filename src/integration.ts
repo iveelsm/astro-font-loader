@@ -1,9 +1,9 @@
 import type { AstroIntegration } from "astro";
-import type { FontsIntegrationOptions } from "./integrationOptions";
-import type { FontInfo } from "./fonts/fontInfo";
 
-import { astroConfigSetup } from "./astroConfig";
 import { astroBuildDone } from "./astroBuild";
+import { astroConfigSetup } from "./astroConfig";
+import type { FontInfo } from "./fonts/fontInfo";
+import type { FontsIntegrationOptions } from "./integrationOptions";
 
 export function fontsIntegration(
 	options: FontsIntegrationOptions = {},
@@ -24,7 +24,13 @@ export function fontsIntegration(
 				transformedCss = result.transformedCss;
 			},
 			"astro:build:done": ({ dir, logger }) => {
-				astroBuildDone(dir, logger, outputDir, fontsInfo, availableFonts);
+				astroBuildDone(
+					dir,
+					logger,
+					outputDir,
+					fontsInfo,
+					availableFonts,
+				);
 			},
 		},
 	};

@@ -10,4 +10,4 @@ export type FontsIntegrationOptions = {
 	 * Defaults to "fonts"
 	 */
 	outputDir?: string;
-}
+};
