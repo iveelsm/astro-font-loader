@@ -1,4 +1,4 @@
-export { getFontsCss } from "./css";
-export { fontsIntegration } from "./integration";
-export { getAvailableFontNames } from "./fonts/available";
-export type { FontsIntegrationOptions } from "./integrationOptions";
+export { getFontsCss } from "./css/index.ts";
+export { fontsIntegration } from "./integration.ts";
+export { getFontsPackageInfo } from "./fonts/index.ts";
+export type { FontsIntegrationOptions } from "./integration.ts";
