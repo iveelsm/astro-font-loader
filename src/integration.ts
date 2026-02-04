@@ -18,9 +18,7 @@ export function fontsIntegration(
 ): AstroIntegration {
 	const { packages, filter, outputDir = "fonts" } = options;
 
-	let fontsInfoList: { fontsDir: string; cssPath: string }[] = [];
 	let availableFonts: FontInfo[] = [];
-	let transformedCss: string = "";
 
 	return {
 		name: "astro-font-loader",
@@ -33,9 +31,7 @@ export function fontsIntegration(
 					filter,
 					config.root,
 				);
-				fontsInfoList = result.fontsInfoList;
 				availableFonts = result.availableFonts;
-				transformedCss = result.transformedCss;
 			},
 			"astro:build:done": ({ dir, logger }) => {
 				astroBuildDone(dir, logger, outputDir, availableFonts);
