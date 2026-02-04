@@ -1,4 +1,4 @@
-import { FontsPackageInfo } from "./fontInfo";
+import type { FontsPackageInfo } from "./fontInfo";
 import { getFontsPackageInfo } from "./package";
 
 export type { FontsPackageInfo };

@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 
-import { FontsPackageInfo } from "../fonts";
+import  type { FontsPackageInfo } from "../fonts";
 import { filterCssFontFaces } from "./filter";
 import { transformCss } from "./transform";
 

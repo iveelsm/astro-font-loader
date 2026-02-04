@@ -1,7 +1,7 @@
 import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
-import { FontInfo } from "./fontInfo";
+import type { FontInfo } from "./fontInfo";
 import { getFontsPackageInfo } from "./package";
 
 export function getAvailableFonts(fontsDir: string): FontInfo[] {

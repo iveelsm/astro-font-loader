@@ -1,7 +1,9 @@
 import { dirname, join } from "node:path";
+import { createRequire } from "module";
+import type { FontsPackageInfo } from "./fontInfo";
 
-import { FontsPackageInfo } from "./fontInfo";
 
+const require = createRequire(import.meta.url);
 /**
  * Retrieves font package information for a given package name.
  *
