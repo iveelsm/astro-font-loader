@@ -1,6 +1,7 @@
 import { createRequire } from "module";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+
 import type { FontsPackageInfo } from "./fontInfo.d.ts";
 
 /**

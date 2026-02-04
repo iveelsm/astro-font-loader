@@ -4,9 +4,9 @@ import type { AstroIntegrationLogger } from "astro";
 
 import { filterCssFontFaces } from "./css/filter.ts";
 import { transformCss } from "./css/transform.ts";
-import { getFontsPackageInfo } from "./fonts/index.ts";
 import { getAvailableFonts } from "./fonts/available.ts";
 import type { FontInfo, FontsPackageInfo } from "./fonts/fontInfo.ts";
+import { getFontsPackageInfo } from "./fonts/index.ts";
 
 /**
  * Result of the configuration setup for font loading.

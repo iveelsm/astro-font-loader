@@ -35,7 +35,6 @@ export type FontsIntegrationOptions = {
 	outputDir?: string;
 };
 
-
 /**
  * Creates an Astro integration for font loading and transformation.
  *
