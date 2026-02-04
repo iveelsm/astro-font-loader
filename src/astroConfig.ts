@@ -30,6 +30,7 @@ export type ConfigSetupResult = {
  * @param {string[]} packages - Array of font package names to load.
  * @param {string} outputDir - The output directory for font files.
  * @param {(filename: string) => boolean} [filter] - Optional filter function to select font files.
+ * @param {URL} [root] - Optional root directory to resolve packages from.
  * @returns {ConfigSetupResult} The result containing font info, available fonts, and transformed CSS.
  */
 export function astroConfigSetup(
@@ -37,6 +38,7 @@ export function astroConfigSetup(
 	packages: string[],
 	outputDir: string,
 	filter?: (filename: string) => boolean,
+	root?: URL,
 ): ConfigSetupResult {
 	const fontsInfoList: FontsPackageInfo[] = [];
 	let availableFonts: FontInfo[] = [];
@@ -48,7 +50,7 @@ export function astroConfigSetup(
 	}
 
 	for (const packageName of packages) {
-		const fontsInfo = getFontsPackageInfo(packageName);
+		const fontsInfo = getFontsPackageInfo(packageName, root);
 		if (!fontsInfo) {
 			logger.warn(`${packageName} package not found. Skipping.`);
 			continue;

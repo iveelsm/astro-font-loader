@@ -25,12 +25,13 @@ export function fontsIntegration(
 	return {
 		name: "astro-font-loader",
 		hooks: {
-			"astro:config:setup": ({ logger }) => {
+			"astro:config:setup": ({ config, logger }) => {
 				const result = astroConfigSetup(
 					logger,
 					packages,
 					outputDir,
 					filter,
+					config.root,
 				);
 				fontsInfoList = result.fontsInfoList;
 				availableFonts = result.availableFonts;
