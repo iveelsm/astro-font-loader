@@ -5,7 +5,7 @@ import { filterCssFontFaces } from "./filter";
 import { transformCss } from "./transform";
 
 /**
- * Options for getting fonts CSS.
+ * Options for getting CSS for @font-face
  */
 export type GetFontsCssOptions = {
 	/** Optional filter function to select font files by filename. */
