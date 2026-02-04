@@ -1,2 +1,3 @@
-export { fontsIntegration, getFontsCss, getAvailableFontNames } from "./fonts/fonts";
-export type { FontsIntegrationOptions } from "./fonts/fonts";
+export { fontsIntegration } from "./integration";
+export { getAvailableFontNames } from "./fonts/available";
+export type { FontsIntegrationOptions } from "./integrationOptions";

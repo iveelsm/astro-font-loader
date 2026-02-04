@@ -1,39 +1,48 @@
-import { getAvailableFonts } from "./fonts/available";
+import type { AstroIntegrationLogger } from "astro";
+import type { FontInfo } from "./fonts/fontInfo";
 
-import { copyFileSync, existsSync, mkdirSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
+
+import { getAvailableFonts } from "./fonts/available";
+import { getFontsPackageInfo } from "./fonts";
 import { filterCssFontFaces } from "./css/filter";
 import { transformCss } from "./css/transform";
-import { getFontsPackageInfo } from "./fonts";
 
+export type ConfigSetupResult = {
+	fontsInfo: { fontsDir: string; cssPath: string } | null;
+	availableFonts: FontInfo[];
+	transformedCss: string;
+};
 
-function astroConfigSetup({ logger }){
-	const fontsInfo = getFontsPackageInfo();
+export function astroConfigSetup(
+	logger: AstroIntegrationLogger,
+	outputDir: string,
+	filter?: (filename: string) => boolean,
+): ConfigSetupResult {
+	let fontsInfo = getFontsPackageInfo("@iveelsm/fonts");
+	let availableFonts: FontInfo[] = [];
+	let transformedCss = "";
 
 	if (!fontsInfo) {
 		logger.warn(
 			"@iveelsm/fonts package not found. Fonts will not be copied.",
 		);
-		return;
+		return { fontsInfo: null, availableFonts, transformedCss };
 	}
 
-	const availableFonts = getAvailableFonts(fontsInfo.fontsDir);
+	availableFonts = getAvailableFonts(fontsInfo.fontsDir);
 
 	if (filter) {
-		availableFonts = availableFonts.filter((font) =>
-			filter(font.filename),
-		);
+		availableFonts = availableFonts.filter((font) => filter(font.filename));
 	}
 
-	logger.info(
-		`Found ${availableFonts.length} font file(s) to copy`,
-	);
+	logger.info(`Found ${availableFonts.length} font file(s) to copy`);
 
-	// Read and transform CSS
 	if (existsSync(fontsInfo.cssPath)) {
 		let rawCss = readFileSync(fontsInfo.cssPath, "utf-8");
-		// First filter out unwanted @font-face blocks
 		rawCss = filterCssFontFaces(rawCss, filter);
-		// Then transform the remaining URLs
 		transformedCss = transformCss(rawCss, outputDir, filter);
 	}
+
+	return { fontsInfo, availableFonts, transformedCss };
 }

@@ -3,7 +3,7 @@ import { FontInfo } from "./fontInfo";
 import { existsSync, readdirSync } from "node:fs";
 import { getFontsPackageInfo } from "./package";
 
-function getAvailableFonts(fontsDir: string): FontInfo[] {
+export function getAvailableFonts(fontsDir: string): FontInfo[] {
 	const srcDir = join(fontsDir, "src");
 	if (!existsSync(srcDir)) {
 		return [];
