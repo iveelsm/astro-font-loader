@@ -38,9 +38,6 @@ export function getAvailableFonts(fontsDir: string): FontInfo[] {
 	return fonts;
 }
 
-/**
- * Get a list of available font filenames from the @iveelsm/fonts package.
- */
 export function getAvailableFontNames(): string[] {
 	const fontsInfo = getFontsPackageInfo("@iveelsm/fonts");
 	if (!fontsInfo) {
