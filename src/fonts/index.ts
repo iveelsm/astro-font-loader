@@ -1,6 +1,6 @@
+import { getAvailableFonts } from "./available.ts";
 import type { FontsPackageInfo } from "./fontInfo.js";
 import { getFontsPackageInfo } from "./package.js";
-import { getAvailableFonts } from "./available.ts";
 
 export type { FontsPackageInfo };
 
