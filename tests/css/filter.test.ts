@@ -1,26 +1,18 @@
 import assert from "node:assert";
+import { readFileSync } from "node:fs";
+import { join, dirname } from "node:path";
 import { describe, it } from "node:test";
+import { fileURLToPath } from "node:url";
 
 import { filterCssFontFaces } from "../../src/css/filter";
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const fixturesDir = join(__dirname, "fixtures");
+const loadFixture = (name: string) =>
+	readFileSync(join(fixturesDir, name), "utf-8").trim();
+
 describe("filterCssFontFaces", () => {
-	const sampleCss = `
-@font-face {
-	font-family: "Roboto";
-	src: url("./Roboto/Roboto-Regular.woff2") format("woff2");
-	font-weight: 400;
-}
-@font-face {
-	font-family: "Roboto";
-	src: url("./Roboto/Roboto-Bold.woff2") format("woff2");
-	font-weight: 700;
-}
-@font-face {
-	font-family: "OpenSans";
-	src: url("./OpenSans/OpenSans-Regular.woff2") format("woff2");
-	font-weight: 400;
-}
-`.trim();
+	const sampleCss = loadFixture("sample.css");
 
 	it("should return original CSS when no filter is provided", () => {
 		const result = filterCssFontFaces(sampleCss);
@@ -58,7 +50,7 @@ describe("filterCssFontFaces", () => {
 	});
 
 	it("should handle CSS with no font-face blocks", () => {
-		const css = "body { font-family: sans-serif; }";
+		const css = loadFixture("no-font-face.css");
 		const filter = () => true;
 		const result = filterCssFontFaces(css, filter);
 
@@ -66,7 +58,8 @@ describe("filterCssFontFaces", () => {
 	});
 
 	it("should handle empty CSS", () => {
-		const result = filterCssFontFaces("", () => true);
-		assert.strictEqual(result, "");
+		const emptyCss = loadFixture("empty.css");
+		const result = filterCssFontFaces(emptyCss, () => true);
+		assert.strictEqual(result, emptyCss);
 	});
 });

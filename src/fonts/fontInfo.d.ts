@@ -1,4 +1,3 @@
-
 /**
  * Information about a single font file.
  * @property {string} filename - The name of the font file.
@@ -10,7 +9,6 @@ export type FontInfo = {
 	sourcePath: string;
 	relativePath: string;
 };
-
 
 /**
  * Information about a font package, including directory and CSS file location.

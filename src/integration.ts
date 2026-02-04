@@ -14,11 +14,11 @@ import type { FontsIntegrationOptions } from "./integrationOptions";
  * @returns {AstroIntegration} The Astro integration object for font loading.
  */
 export function fontsIntegration(
-	options: FontsIntegrationOptions = {},
+	options: FontsIntegrationOptions,
 ): AstroIntegration {
-	const { filter, outputDir = "fonts" } = options;
+	const { packages, filter, outputDir = "fonts" } = options;
 
-	let fontsInfo: { fontsDir: string; cssPath: string } | null = null;
+	let fontsInfoList: { fontsDir: string; cssPath: string }[] = [];
 	let availableFonts: FontInfo[] = [];
 	let transformedCss: string = "";
 
@@ -26,19 +26,18 @@ export function fontsIntegration(
 		name: "astro-font-loader",
 		hooks: {
 			"astro:config:setup": ({ logger }) => {
-				const result = astroConfigSetup(logger, outputDir, filter);
-				fontsInfo = result.fontsInfo;
+				const result = astroConfigSetup(
+					logger,
+					packages,
+					outputDir,
+					filter,
+				);
+				fontsInfoList = result.fontsInfoList;
 				availableFonts = result.availableFonts;
 				transformedCss = result.transformedCss;
 			},
 			"astro:build:done": ({ dir, logger }) => {
-				astroBuildDone(
-					dir,
-					logger,
-					outputDir,
-					fontsInfo,
-					availableFonts,
-				);
+				astroBuildDone(dir, logger, outputDir, availableFonts);
 			},
 		},
 	};

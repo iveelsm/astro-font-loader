@@ -1,21 +1,18 @@
 import assert from "node:assert";
+import { readFileSync } from "node:fs";
+import { join, dirname } from "node:path";
 import { describe, it } from "node:test";
+import { fileURLToPath } from "node:url";
 
 import { transformCss } from "../../src/css/transform";
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const fixturesDir = join(__dirname, "fixtures");
+const loadFixture = (name: string) =>
+	readFileSync(join(fixturesDir, name), "utf-8").trim();
+
 describe("transformCss", () => {
-	const sampleCss = `
-@font-face {
-	font-family: "Roboto";
-	src: url("./Roboto/Roboto-Regular.woff2") format("woff2");
-	font-weight: 400;
-}
-@font-face {
-	font-family: "OpenSans";
-	src: url('./OpenSans/OpenSans-Bold.woff2') format("woff2");
-	font-weight: 700;
-}
-`.trim();
+	const sampleCss = loadFixture("mixed-quotes.css");
 
 	it("should transform relative URLs to absolute paths with output directory", () => {
 		const result = transformCss(sampleCss, "fonts");
@@ -47,19 +44,20 @@ describe("transformCss", () => {
 	});
 
 	it("should handle CSS with no URLs", () => {
-		const css = "body { font-family: sans-serif; }";
+		const css = loadFixture("no-font-face.css");
 		const result = transformCss(css, "fonts");
 
 		assert.strictEqual(result, css);
 	});
 
 	it("should handle empty CSS", () => {
-		const result = transformCss("", "fonts");
-		assert.strictEqual(result, "");
+		const emptyCss = loadFixture("empty.css");
+		const result = transformCss(emptyCss, "fonts");
+		assert.strictEqual(result, emptyCss);
 	});
 
 	it("should handle URLs without quotes", () => {
-		const css = "@font-face { src: url(./test/Font.woff2); }";
+		const css = loadFixture("unquoted-url.css");
 		const result = transformCss(css, "fonts");
 
 		assert.ok(result.includes('url("/fonts/Font.woff2")'));
