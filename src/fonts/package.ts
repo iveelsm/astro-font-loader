@@ -1,6 +1,7 @@
-import { dirname, join } from "node:path";
 import { createRequire } from "module";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+
 import type { FontsPackageInfo } from "./fontInfo";
 
 /**
@@ -20,9 +21,7 @@ export function getFontsPackageInfo(
 	try {
 		let requireBase: string;
 		if (root) {
-			const rootPath = root instanceof URL ?
-				fileURLToPath(root)
-				: root;
+			const rootPath = root instanceof URL ? fileURLToPath(root) : root;
 
 			requireBase = join(rootPath, "package.json");
 		} else {
