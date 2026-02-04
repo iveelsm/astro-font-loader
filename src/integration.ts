@@ -1,3 +1,15 @@
+import { AstroIntegration } from "astro";
+import { FontsIntegrationOptions } from "./integrationOptions";
+import { FontInfo } from "./fonts/fontInfo";
+import { getAvailableFonts } from "./fonts/available";
+
+import { dirname, join, basename } from "node:path";
+import { fileURLToPath } from "url";
+import { createRequire } from "module";
+import { copyFileSync, existsSync, mkdirSync, readFileSync } from "node:fs";
+import { filterCssFontFaces } from "./css/filter";
+import { transformCss } from "./css/transform";
+
 export function fontsIntegration(
 	options: FontsIntegrationOptions = {},
 ): AstroIntegration {
@@ -8,7 +20,7 @@ export function fontsIntegration(
 	let transformedCss: string = "";
 
 	return {
-		name: "fonts-integration",
+		name: "astro-font-loader",
 		hooks: {
 			"astro:config:setup": ({ logger }) => {
 				fontsInfo = getFontsPackageInfo();
@@ -32,12 +44,9 @@ export function fontsIntegration(
 					`Found ${availableFonts.length} font file(s) to copy`,
 				);
 
-				// Read and transform CSS
 				if (existsSync(fontsInfo.cssPath)) {
 					let rawCss = readFileSync(fontsInfo.cssPath, "utf-8");
-					// First filter out unwanted @font-face blocks
 					rawCss = filterCssFontFaces(rawCss, filter);
-					// Then transform the remaining URLs
 					transformedCss = transformCss(rawCss, outputDir, filter);
 				}
 			},
@@ -48,12 +57,10 @@ export function fontsIntegration(
 
 				const outputPath = fileURLToPath(new URL(outputDir, dir));
 
-				// Create the fonts directory
 				if (!existsSync(outputPath)) {
 					mkdirSync(outputPath, { recursive: true });
 				}
 
-				// Copy each font file
 				for (const font of availableFonts) {
 					const destPath = join(outputPath, font.filename);
 					try {

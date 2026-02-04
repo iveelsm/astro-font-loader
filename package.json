@@ -7,6 +7,8 @@
 	"version": "0.0.1",
 	"main": "src/index.js",
 	"keywords": [
+		"astro-component",
+		"astro-loader",
 		"astro",
 		"fonts",
 		"plugin"
@@ -20,15 +22,21 @@
 		"url": "git+https://github.com/iveelsm/astro-font-loader.git"
 	},
 	"scripts": {
+		"build": "tsc .",
 		"lint": "prettier --check . && eslint .",
 		"lint:fix": "prettier --write . && eslint . --fix"
 	},
 	"devDependencies": {
+		"@tsconfig/recommended": "^1.0.13",
+		"@types/node": "^25.2.0",
 		"@typescript-eslint/eslint-plugin": "^8.54.0",
 		"@typescript-eslint/parser": "^8.54.0",
 		"eslint": "^9.39.2",
 		"eslint-plugin-perfectionist": "^5.4.0",
 		"typescript": "^5.9.3",
 		"typescript-eslint": "^8.54.0"
+	},
+	"dependencies": {
+		"astro": "^5.17.1"
 	}
 }

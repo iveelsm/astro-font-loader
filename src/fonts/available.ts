@@ -1,6 +1,9 @@
+import { join } from "node:path";
 import { FontInfo } from "./fontInfo";
+import { existsSync, readdirSync } from "node:fs";
+import { getFontsPackageInfo } from "./package";
 
-export function getAvailableFonts(fontsDir: string): FontInfo[] {
+function getAvailableFonts(fontsDir: string): FontInfo[] {
 	const srcDir = join(fontsDir, "src");
 	if (!existsSync(srcDir)) {
 		return [];
@@ -11,7 +14,6 @@ export function getAvailableFonts(fontsDir: string): FontInfo[] {
 
 	for (const entry of entries) {
 		if (entry.isDirectory()) {
-			// Scan subdirectories for font files
 			const subDirPath = join(srcDir, entry.name);
 			const subFiles = readdirSync(subDirPath);
 			for (const file of subFiles) {
@@ -24,7 +26,6 @@ export function getAvailableFonts(fontsDir: string): FontInfo[] {
 				}
 			}
 		} else if (/\.(woff2?|ttf|otf|eot)$/i.test(entry.name)) {
-			// Font file directly in src
 			fonts.push({
 				filename: entry.name,
 				sourcePath: join(srcDir, entry.name),
@@ -40,9 +41,11 @@ export function getAvailableFonts(fontsDir: string): FontInfo[] {
  * Get a list of available font filenames from the @iveelsm/fonts package.
  */
 export function getAvailableFontNames(): string[] {
-	const fontsInfo = getFontsPackageInfo();
+	const fontsInfo = getFontsPackageInfo("@iveelsm/fonts");
 	if (!fontsInfo) {
 		return [];
 	}
-	return getAvailableFonts(fontsInfo.fontsDir).map((f) => f.filename);
+
+	return getAvailableFonts(fontsInfo.fontsDir)
+		.map((f) => f.filename);
 }
