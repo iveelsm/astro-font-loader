@@ -27,7 +27,6 @@ export function astroBuildDone(
 	}
 
 	const outputPath = fileURLToPath(new URL(outputDir, dir));
-
 	if (!existsSync(outputPath)) {
 		mkdirSync(outputPath, { recursive: true });
 	}

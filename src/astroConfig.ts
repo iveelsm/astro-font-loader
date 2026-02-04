@@ -6,17 +6,17 @@ import { filterCssFontFaces } from "./css/filter";
 import { transformCss } from "./css/transform";
 import { getFontsPackageInfo } from "./fonts";
 import { getAvailableFonts } from "./fonts/available";
-import type { FontInfo } from "./fonts/fontInfo";
+import type { FontInfo, FontsPackageInfo } from "./fonts/fontInfo";
 
 /**
  * Result of the configuration setup for font loading.
  *
- * @property {Array<{ fontsDir: string; cssPath: string }>} fontsInfoList - List of font package information objects.
+ * @property {Array<FontsPackageInfo>} fontsInfoList - List of font package information objects.
  * @property {FontInfo[]} availableFonts - Array of available font files from all packages.
  * @property {string} transformedCss - The combined and transformed CSS from all packages.
  */
 export type ConfigSetupResult = {
-	fontsInfoList: { fontsDir: string; cssPath: string }[];
+	fontsInfoList: FontsPackageInfo[];
 	availableFonts: FontInfo[];
 	transformedCss: string;
 };
@@ -38,7 +38,7 @@ export function astroConfigSetup(
 	outputDir: string,
 	filter?: (filename: string) => boolean,
 ): ConfigSetupResult {
-	const fontsInfoList: { fontsDir: string; cssPath: string }[] = [];
+	const fontsInfoList: FontsPackageInfo[] = [];
 	let availableFonts: FontInfo[] = [];
 	let transformedCss = "";
 
@@ -49,22 +49,18 @@ export function astroConfigSetup(
 
 	for (const packageName of packages) {
 		const fontsInfo = getFontsPackageInfo(packageName);
-
 		if (!fontsInfo) {
 			logger.warn(`${packageName} package not found. Skipping.`);
 			continue;
 		}
 
 		fontsInfoList.push(fontsInfo);
-
 		let packageFonts = getAvailableFonts(fontsInfo.fontsDir);
-
 		if (filter) {
 			packageFonts = packageFonts.filter((font) => filter(font.filename));
 		}
 
 		availableFonts = availableFonts.concat(packageFonts);
-
 		if (existsSync(fontsInfo.cssPath)) {
 			let rawCss = readFileSync(fontsInfo.cssPath, "utf-8");
 			rawCss = filterCssFontFaces(rawCss, filter);

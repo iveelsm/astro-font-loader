@@ -12,7 +12,6 @@ export function getAvailableFonts(fontsDir: string): FontInfo[] {
 
 	const fonts: FontInfo[] = [];
 	const entries = readdirSync(srcDir, { withFileTypes: true });
-
 	for (const entry of entries) {
 		if (entry.isDirectory()) {
 			const subDirPath = join(srcDir, entry.name);
