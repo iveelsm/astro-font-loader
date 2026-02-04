@@ -1,11 +1,21 @@
 {
-	"name": "@iveelsm/astro-font-loader",
+	"name": "astro-font-loader",
 	"description": "Loads fonts into astro build artifacts from custom fonts packages",
 	"author": "Mikey Sleevi <development@frogman.simplelogin.com>",
 	"license": "MIT",
 	"type": "module",
-	"version": "0.0.1",
-	"main": "dist/index.js",
+	"version": "0.0.2",
+	"main": "src/index.ts",
+	"types": "dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		}
+	},
+	"files": [
+		"dist"
+	],
 	"keywords": [
 		"astro-component",
 		"astro-loader",

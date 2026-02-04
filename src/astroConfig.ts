@@ -2,11 +2,11 @@ import { existsSync, readFileSync } from "node:fs";
 
 import type { AstroIntegrationLogger } from "astro";
 
-import { filterCssFontFaces } from "./css/filter";
-import { transformCss } from "./css/transform";
-import { getFontsPackageInfo } from "./fonts";
-import { getAvailableFonts } from "./fonts/available";
-import type { FontInfo, FontsPackageInfo } from "./fonts/fontInfo";
+import { filterCssFontFaces } from "./css/filter.ts";
+import { transformCss } from "./css/transform.ts";
+import { getAvailableFonts } from "./fonts/available.ts";
+import type { FontInfo, FontsPackageInfo } from "./fonts/fontInfo.ts";
+import { getFontsPackageInfo } from "./fonts/index.ts";
 
 /**
  * Result of the configuration setup for font loading.

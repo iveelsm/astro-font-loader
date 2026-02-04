@@ -4,7 +4,7 @@ import { fileURLToPath } from "url";
 
 import type { AstroIntegrationLogger } from "astro";
 
-import type { FontInfo } from "./fonts/fontInfo";
+import type { FontInfo } from "./fonts/fontInfo.ts";
 
 /**
  * Handles the build completion phase for font loading.

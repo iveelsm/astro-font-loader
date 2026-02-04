@@ -1,3 +1,3 @@
-import { getFontsCss } from "./get";
+import { getFontsCss } from "./get.ts";
 
 export { getFontsCss };

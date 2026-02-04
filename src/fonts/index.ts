@@ -1,5 +1,5 @@
-import type { FontsPackageInfo } from "./fontInfo";
-import { getFontsPackageInfo } from "./package";
+import type { FontsPackageInfo } from "./fontInfo.js";
+import { getFontsPackageInfo } from "./package.js";
 
 export type { FontsPackageInfo };
 

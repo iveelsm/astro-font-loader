@@ -1,8 +1,8 @@
 import { existsSync, readFileSync } from "node:fs";
 
-import type { FontsPackageInfo } from "../fonts";
-import { filterCssFontFaces } from "./filter";
-import { transformCss } from "./transform";
+import type { FontsPackageInfo } from "../fonts/index.ts";
+import { filterCssFontFaces } from "./filter.ts";
+import { transformCss } from "./transform.ts";
 
 /**
  * Options for getting CSS for @font-face
