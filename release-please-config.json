@@ -5,7 +5,9 @@
 	"tag-separator": "/",
 	"release-type": "node",
 	"packages": {
-		".": {}
+		".": {
+			"versioning": "always-bump-patch"
+		}
 	},
 	"changelog-sections": [
 		{
