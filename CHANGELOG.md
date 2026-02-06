@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/iveelsm/astro-font-loader/compare/v0.1.0...v0.1.1) (2026-02-06)
+
+
+### Bug Fixes
+
+* Add provenance, unset default NODE_AUTH_TOKEN ([#11](https://github.com/iveelsm/astro-font-loader/issues/11)) ([cbd1d3c](https://github.com/iveelsm/astro-font-loader/commit/cbd1d3c4f7824a494fd91d6a8cb59431a2128380))
+
 ## [0.1.0](https://github.com/iveelsm/astro-font-loader/compare/v0.0.3...v0.1.0) (2026-02-06)
 
 
