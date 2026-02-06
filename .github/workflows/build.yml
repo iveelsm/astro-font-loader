@@ -10,7 +10,7 @@ on:
 
 jobs:
     build:
-        name: Astro Build
+        name: Compile
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
