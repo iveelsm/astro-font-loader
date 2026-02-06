@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.2](https://github.com/iveelsm/astro-font-loader/compare/v0.1.1...v0.1.2) (2026-02-06)
+
+
+### Bug Fixes
+
+* Cleaning up the package for imports, exports and configuration options ([#19](https://github.com/iveelsm/astro-font-loader/issues/19)) ([e8ed5fa](https://github.com/iveelsm/astro-font-loader/commit/e8ed5fabd69a7693828860c8ecdf310ea7ab5b30))
+* Remove always update ([#17](https://github.com/iveelsm/astro-font-loader/issues/17)) ([fa58afc](https://github.com/iveelsm/astro-font-loader/commit/fa58afc8f389d6900c175391f8abf0db9cb45aad))
+
 ## [0.1.1](https://github.com/iveelsm/astro-font-loader/compare/v0.1.0...v0.1.1) (2026-02-06)
 
 
