@@ -4,10 +4,9 @@
 	"include-v-in-tag": true,
 	"tag-separator": "/",
 	"release-type": "node",
+	"always-update": true,
 	"packages": {
-		".": {
-			"versioning": "always-bump-patch"
-		}
+		".": {}
 	},
 	"changelog-sections": [
 		{
