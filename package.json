@@ -5,14 +5,20 @@
 	"license": "MIT",
 	"type": "module",
 	"version": "0.1.1",
-	"main": "src/index.ts",
-	"types": "dist/index.d.ts",
+	"engines": {
+		"node": ">=18.0.0"
+	},
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
-			"import": "./dist/index.js"
+			"import": "./dist/index.js",
+			"default": "./dist/index.js"
 		}
 	},
+	"sideEffects": false,
 	"files": [
 		"dist"
 	],
@@ -35,7 +41,8 @@
 		"build": "tsc",
 		"test": "node --import tsx --test tests/**/*.test.ts",
 		"lint": "prettier --check . && eslint .",
-		"lint:fix": "prettier --write . && eslint . --fix"
+		"lint:fix": "prettier --write . && eslint . --fix",
+		"clean": "rm -rf dist"
 	},
 	"devDependencies": {
 		"@tsconfig/recommended": "^1.0.13",
