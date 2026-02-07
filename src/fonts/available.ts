@@ -2,7 +2,6 @@ import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
 import type { FontInfo } from "./fontInfo.d.ts";
-import { getFontsPackageInfo } from "./package.ts";
 
 /**
  * Scans the given fonts directory and returns an array of FontInfo objects for all available font files.
