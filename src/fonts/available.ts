@@ -2,7 +2,6 @@ import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
 import type { FontInfo } from "./fontInfo.d.ts";
-import { getFontsPackageInfo } from "./package.ts";
 
 /**
  * Scans the given fonts directory and returns an array of FontInfo objects for all available font files.
@@ -41,18 +40,4 @@ export function getAvailableFonts(fontsDir: string): FontInfo[] {
 	}
 
 	return fonts;
-}
-
-/**
- * Returns the filenames of all available fonts in the default fonts package.
- *
- * @returns {string[]} Array of font filenames.
- */
-export function getAvailableFontNames(): string[] {
-	const fontsInfo = getFontsPackageInfo("@iveelsm/fonts");
-	if (!fontsInfo) {
-		return [];
-	}
-
-	return getAvailableFonts(fontsInfo.fontsDir).map((f) => f.filename);
 }
