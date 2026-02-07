@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/iveelsm/astro-font-loader/compare/v0.1.2...v0.1.3) (2026-02-07)
+
+
+### Bug Fixes
+
+* Remove custom functions from testing ([#21](https://github.com/iveelsm/astro-font-loader/issues/21)) ([7e17b15](https://github.com/iveelsm/astro-font-loader/commit/7e17b15a5cd4ede262e4fe647a302b364d91e507))
+
 ## [0.1.2](https://github.com/iveelsm/astro-font-loader/compare/v0.1.1...v0.1.2) (2026-02-06)
 
 
