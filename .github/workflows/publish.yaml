@@ -1,13 +1,14 @@
 name: Publish Package
 
+permissions:
+    contents: read
+    id-token: write
+
+
 on:
     push:
         tags:
             - "v*"
-
-permissions:
-    contents: read
-    id-token: write
 
 jobs:
     publish:
