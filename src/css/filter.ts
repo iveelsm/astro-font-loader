@@ -19,10 +19,12 @@ export function filterCssFontFaces(
 	}
 
 	return css.replace(/@font-face\s*\{[^}]*\}/g, (match) => {
-		const urlMatches = match.matchAll(/url\(["']?\.\/([^"')]+)["']?\)/g);
+		const urlMatches = match.matchAll(
+			/url\(["']?(\.\/[^"')]+|https?:\/\/[^"')]+)["']?\)/g,
+		);
 		for (const urlMatch of urlMatches) {
-			const relativePath = urlMatch[1];
-			const filename = basename(relativePath);
+			const fullPath = urlMatch[1];
+			const filename = basename(fullPath);
 			if (filter(filename)) {
 				return match;
 			}

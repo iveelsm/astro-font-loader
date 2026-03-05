@@ -62,4 +62,27 @@ describe("filterCssFontFaces", () => {
 		const result = filterCssFontFaces(emptyCss, () => true);
 		assert.strictEqual(result, emptyCss);
 	});
+
+	describe("network CSS with absolute URLs", () => {
+		const networkCss = loadFixture("network-fonts.css");
+
+		it("should filter network font-face blocks by filename", () => {
+			const filter = (filename: string) => filename.includes("Roboto");
+			const result = filterCssFontFaces(networkCss, filter);
+
+			assert.ok(result.includes("Roboto-Regular.woff2"));
+			assert.ok(result.includes("Roboto-Bold.woff2"));
+			assert.ok(!result.includes("OpenSans"));
+		});
+
+		it("should keep all network font-face blocks when no filter", () => {
+			const result = filterCssFontFaces(networkCss);
+			assert.strictEqual(result, networkCss);
+		});
+
+		it("should remove all network font-face blocks when filter rejects all", () => {
+			const result = filterCssFontFaces(networkCss, () => false);
+			assert.ok(!result.includes("@font-face"));
+		});
+	});
 });
