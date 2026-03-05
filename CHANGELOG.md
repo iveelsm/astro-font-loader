@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/iveelsm/astro-font-loader/compare/v0.1.3...v0.1.4) (2026-03-05)
+
+
+### Bug Fixes
+
+* Explicitly add @eslint/js as a dependency ([#30](https://github.com/iveelsm/astro-font-loader/issues/30)) ([9065f67](https://github.com/iveelsm/astro-font-loader/commit/9065f67fceb2b5b133a369951e50e79a471ebec0))
+
 ## [0.1.3](https://github.com/iveelsm/astro-font-loader/compare/v0.1.2...v0.1.3) (2026-02-07)
 
 
