@@ -109,6 +109,47 @@ fontsIntegration({
 })
 ```
 
+### FontLoader Component
+
+The library provides a `FontLoader` Astro component that generates `<link rel="preload">` tags and inline `@font-face` CSS for your fonts. Use it alongside the integration — the integration copies font files to the build output, while the component injects the HTML needed to load them.
+
+```astro
+---
+// src/layouts/Layout.astro
+import FontLoader from 'astro-font-loader/FontLoader.astro';
+---
+<html>
+  <head>
+    <FontLoader packages={['@company/design-system-fonts']} />
+  </head>
+  <body><slot /></body>
+</html>
+```
+
+The component accepts the same `filter` and `outputDir` options as the integration:
+
+```astro
+---
+import FontLoader from 'astro-font-loader/FontLoader.astro';
+
+const fontFilter = (filename: string) =>
+  filename.toLowerCase().includes('roboto');
+---
+<FontLoader
+  packages={['@company/design-system-fonts']}
+  filter={fontFilter}
+  outputDir="assets/fonts"
+/>
+```
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `packages` | `string[]` | (required) | Font package names to load |
+| `filter` | `(filename: string) => boolean` | `undefined` | Filter function to select font files |
+| `outputDir` | `string` | `"fonts"` | Output directory name in generated URLs |
+| `preload` | `boolean` | `true` | Whether to generate preload link tags |
+| `root` | `string` | `process.cwd()` | Root directory for resolving font packages |
+
 ## Additional Documentation
 
 * [API Reference](./docs/API.md)

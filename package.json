@@ -16,11 +16,13 @@
 			"types": "./dist/index.d.ts",
 			"import": "./dist/index.js",
 			"default": "./dist/index.js"
-		}
+		},
+		"./FontLoader.astro": "./components/FontLoader.astro"
 	},
 	"sideEffects": false,
 	"files": [
-		"dist"
+		"dist",
+		"components"
 	],
 	"keywords": [
 		"astro-component",

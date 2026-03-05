@@ -1,0 +1,67 @@
+---
+import { getFontsPackageInfo, getAvailableFonts, getFontsCss } from 'astro-font-loader';
+
+interface Props {
+	/** Array of font package names to load. */
+	packages: string[];
+	/** Optional filter function to select which font files to include. */
+	filter?: (filename: string) => boolean;
+	/** Output directory name used in generated font URLs. Defaults to "fonts". */
+	outputDir?: string;
+	/** Whether to generate preload link tags. Defaults to true. */
+	preload?: boolean;
+	/** Root directory to resolve font packages from. Defaults to process.cwd(). */
+	root?: string;
+}
+
+const MIME_TYPES: Record<string, string> = {
+	woff2: 'font/woff2',
+	woff: 'font/woff',
+	ttf: 'font/ttf',
+	otf: 'font/otf',
+	eot: 'application/vnd.ms-fontobject',
+};
+
+function getMimeType(filename: string): string {
+	const ext = filename.split('.').pop()?.toLowerCase() ?? '';
+	return MIME_TYPES[ext] ?? 'font/woff2';
+}
+
+const {
+	packages,
+	filter,
+	outputDir = 'fonts',
+	preload = true,
+	root = process.cwd(),
+} = Astro.props;
+
+let css = '';
+const seen = new Set<string>();
+const preloadHrefs: Array<{ href: string; type: string }> = [];
+
+for (const packageName of packages) {
+	const packageInfo = getFontsPackageInfo(packageName, root);
+	if (!packageInfo) continue;
+
+	css += getFontsCss({ filter, outputDir }, packageInfo);
+
+	if (preload) {
+		let fonts = getAvailableFonts(packageInfo.fontsDir);
+		if (filter) {
+			fonts = fonts.filter((font) => filter(font.filename));
+		}
+		for (const font of fonts) {
+			const href = `/${outputDir}/${font.filename}`;
+			if (!seen.has(href)) {
+				seen.add(href);
+				preloadHrefs.push({ href, type: getMimeType(font.filename) });
+			}
+		}
+	}
+}
+---
+
+{preload && preloadHrefs.map(({ href, type }) => (
+	<link rel="preload" as="font" crossorigin href={href} type={type} />
+))}
+{css && <style set:html={css} is:inline />}
