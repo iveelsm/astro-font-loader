@@ -15,6 +15,21 @@ export type GetFontsCssOptions = {
 };
 
 /**
+ * Minifies a CSS string by removing comments, extra whitespace, and newlines.
+ *
+ * @param css - The CSS string to minify.
+ * @returns The minified CSS string.
+ */
+function minifyCss(css: string): string {
+	return css
+		.replace(/\/\*[\s\S]*?\*\//g, "")
+		.replace(/\s+/g, " ")
+		.replace(/\s*([{}:;,])\s*/g, "$1")
+		.replace(/;}/g, "}")
+		.trim();
+}
+
+/**
  * Loads, filters, and transforms the CSS for font-face rules from a font package.
  *
  * Reads the CSS file specified in the font package information, applies an optional filter to @font-face rules,
@@ -22,7 +37,7 @@ export type GetFontsCssOptions = {
  *
  * @param {GetFontsCssOptions} [options={}] - Options including filter and output directory.
  * @param {FontsPackageInfo | null} fontPackageInformation - Information about the font package, including the CSS file path.
- * @returns {string} The processed CSS string, or an empty string if the CSS file is missing or no package info is provided.
+ * @returns {string} The processed and minified CSS string, or an empty string if the CSS file is missing or no package info is provided.
  */
 export function getFontsCss(
 	options: GetFontsCssOptions = {},
@@ -38,5 +53,6 @@ export function getFontsCss(
 
 	let rawCss = readFileSync(fontPackageInformation.cssPath, "utf-8");
 	rawCss = filterCssFontFaces(rawCss, filter);
-	return transformCss(rawCss, outputDir, filter);
+	const transformedCss = transformCss(rawCss, outputDir, filter);
+	return minifyCss(transformedCss);
 }
