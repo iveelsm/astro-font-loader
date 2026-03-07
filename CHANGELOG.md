@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5](https://github.com/iveelsm/astro-font-loader/compare/v0.1.4...v0.1.5) (2026-03-07)
+
+
+### Bug Fixes
+
+* Minify CSS returned from getFontsCSS ([#41](https://github.com/iveelsm/astro-font-loader/issues/41)) ([124c0e9](https://github.com/iveelsm/astro-font-loader/commit/124c0e995ed77b903f88587e9b549e49c6d1d763))
+
 ## [0.1.4](https://github.com/iveelsm/astro-font-loader/compare/v0.1.3...v0.1.4) (2026-03-05)
 
 
