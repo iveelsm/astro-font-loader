@@ -22,10 +22,10 @@ export type GetFontsCssOptions = {
  */
 function minifyCss(css: string): string {
 	return css
-		.replace(/\/\*[\s\S]*?\*\//g, "") // Remove comments
-		.replace(/\s+/g, " ") // Collapse whitespace
-		.replace(/\s*([{}:;,])\s*/g, "$1") // Remove space around punctuation
-		.replace(/;}/g, "}") // Remove trailing semicolons
+		.replace(/\/\*[\s\S]*?\*\//g, "")
+		.replace(/\s+/g, " ")
+		.replace(/\s*([{}:;,])\s*/g, "$1")
+		.replace(/;}/g, "}")
 		.trim();
 }
 
