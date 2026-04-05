@@ -144,3 +144,61 @@ const fontsCss = getFontsCss(
 
 // Use in Astro component
 ```
+
+---
+
+## Components
+
+### `FontLoader`
+
+An Astro component that generates `<link rel="preload">` tags and inline `@font-face` CSS. Use alongside the integration — the integration copies fonts at build time, while the component injects the HTML to load them.
+
+```astro
+---
+import FontLoader from 'astro-font-loader/FontLoader.astro';
+---
+<FontLoader packages={['@company/design-system-fonts']} />
+```
+
+#### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `packages` | `string[]` | (required) | Font package names to load |
+| `filter` | `(filename: string) => boolean` | `undefined` | Filter function to select font files for CSS |
+| `outputDir` | `string` | `"fonts"` | Output directory name in generated URLs |
+| `preload` | `boolean \| PreloadConfig[]` | `true` | Whether/how to generate preload link tags |
+| `root` | `string` | `process.cwd()` | Root directory for resolving font packages |
+
+---
+
+## Types
+
+### `PreloadConfig`
+
+Configuration for selective font preloading with optional media queries.
+
+```typescript
+import type { PreloadConfig } from 'astro-font-loader';
+```
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `filter` | `(filename: string) => boolean` | Yes | Filter to select which fonts to preload |
+| `media` | `string` | No | Media query for the preload link (e.g., `"(min-width: 641px)"`) |
+
+#### Example
+
+```typescript
+import type { PreloadConfig } from 'astro-font-loader';
+
+const preloadConfig: PreloadConfig[] = [
+  {
+    filter: (f) => f.includes('roboto-regular'),
+  },
+  {
+    filter: (f) => f.includes('roboto-bold'),
+    media: '(min-width: 641px)',
+  },
+];
+```
