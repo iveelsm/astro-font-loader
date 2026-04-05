@@ -4,7 +4,7 @@
 	"author": "Mikey Sleevi <development@frogman.simplelogin.com>",
 	"license": "MIT",
 	"type": "module",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"engines": {
 		"node": ">=18.0.0"
 	},
