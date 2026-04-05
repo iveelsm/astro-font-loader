@@ -6,3 +6,5 @@ export type { GetFontsCssOptions } from "./css/get.ts";
 
 export { getFontsPackageInfo, getAvailableFonts } from "./fonts/index.ts";
 export type { FontInfo, FontsPackageInfo } from "./fonts/index.ts";
+
+export type { PreloadConfig } from "./components/types.ts";

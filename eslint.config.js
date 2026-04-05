@@ -6,7 +6,7 @@ export default [
 	eslint.configs.recommended,
 	...tseslint.configs.recommended,
 	{
-		ignores: ["dist/", "node_modules/", "*.md"],
+		ignores: ["dist/", "node_modules/", "*.md", "components/"],
 	},
 	{
 		files: ["**/*.ts", "**/*.js"],
