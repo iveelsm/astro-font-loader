@@ -142,13 +142,46 @@ const fontFilter = (filename: string) =>
 />
 ```
 
+#### Selective Preloading with Media Queries
+
+The `preload` prop accepts an array of configurations for fine-grained control over which fonts are preloaded and with what media queries. This is useful for responsive font loading — for example, preloading a bold weight only on desktop:
+
+```astro
+---
+import FontLoader from 'astro-font-loader/FontLoader.astro';
+
+const fontFilter = (filename: string) =>
+  filename.toLowerCase().includes('roboto');
+---
+<FontLoader
+  packages={['@company/design-system-fonts']}
+  filter={fontFilter}
+  preload={[
+    {
+      filter: (f) => f.includes('roboto-regular'),
+    },
+    {
+      filter: (f) => f.includes('roboto-bold'),
+      media: '(min-width: 641px)',
+    },
+  ]}
+/>
+```
+
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `packages` | `string[]` | (required) | Font package names to load |
 | `filter` | `(filename: string) => boolean` | `undefined` | Filter function to select font files |
 | `outputDir` | `string` | `"fonts"` | Output directory name in generated URLs |
-| `preload` | `boolean` | `true` | Whether to generate preload link tags |
+| `preload` | `boolean \| PreloadConfig[]` | `true` | Whether/how to generate preload link tags |
 | `root` | `string` | `process.cwd()` | Root directory for resolving font packages |
+
+**`PreloadConfig`**
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `filter` | `(filename: string) => boolean` | Yes | Filter to select which fonts to preload |
+| `media` | `string` | No | Media query for the preload link |
 
 ## Additional Documentation
 
