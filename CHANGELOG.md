@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/iveelsm/astro-font-loader/compare/v0.2.0...v0.2.1) (2026-04-06)
+
+
+### Bug Fixes
+
+* Add documentation for the new FontLoader Component ([#67](https://github.com/iveelsm/astro-font-loader/issues/67)) ([46160ba](https://github.com/iveelsm/astro-font-loader/commit/46160ba50bd0618fa1ddcadea197f643614edc08))
+
 ## [0.2.0](https://github.com/iveelsm/astro-font-loader/compare/v0.1.6...v0.2.0) (2026-04-05)
 
 
