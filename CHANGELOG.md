@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.2](https://github.com/iveelsm/astro-font-loader/compare/v0.2.1...v0.2.2) (2026-04-28)
+
+
+### Bug Fixes
+
+* Remove NODE_AUTH_TOKEN unset for publishing with provenance ([#89](https://github.com/iveelsm/astro-font-loader/issues/89)) ([e8c5ef0](https://github.com/iveelsm/astro-font-loader/commit/e8c5ef062d6be6b6d49471922f9ddb0f19e5b46f))
+* Upgrade release please to v5 ([#87](https://github.com/iveelsm/astro-font-loader/issues/87)) ([6fae29d](https://github.com/iveelsm/astro-font-loader/commit/6fae29df6aec0d41c945f100da7603b4bb85d367))
+
 ## [0.2.1](https://github.com/iveelsm/astro-font-loader/compare/v0.2.0...v0.2.1) (2026-04-06)
 
 
