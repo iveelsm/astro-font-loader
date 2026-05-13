@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.3](https://github.com/iveelsm/astro-font-loader/compare/v0.2.2...v0.2.3) (2026-05-12)
+
+
+### Bug Fixes
+
+* Establish tighter restrictions on actions versioning ([#100](https://github.com/iveelsm/astro-font-loader/issues/100)) ([f3769cf](https://github.com/iveelsm/astro-font-loader/commit/f3769cff095fd457dc456b7721250b678d745cb2))
+
 ## [0.2.2](https://github.com/iveelsm/astro-font-loader/compare/v0.2.1...v0.2.2) (2026-04-28)
 
 
