@@ -43,7 +43,11 @@ export function deriveFilenameFromUrl(url: string): string {
 	if (FONT_EXTENSION_REGEX.test(pathBasename)) {
 		return pathBasename;
 	}
-	const hash = createHash("sha256").update(url).digest("hex").slice(0, 12);
+
+	const hash = createHash("sha256")
+		.update(url)
+		.digest("hex")
+		.slice(0, 12);
 	const ext = extname(urlObj.pathname) || ".woff2";
 	return `font-${hash}${ext}`;
 }
@@ -66,17 +70,13 @@ export async function downloadFont(
 
 	if (!existsSync(cachedPath)) {
 		const controller = new AbortController();
-		const timeoutId = setTimeout(
-			() => controller.abort(),
-			DOWNLOAD_TIMEOUT_MS,
-		);
+		const timeoutId = setTimeout(() => controller.abort(), DOWNLOAD_TIMEOUT_MS);
 		try {
 			const response = await fetch(url, { signal: controller.signal });
 			if (!response.ok) {
-				throw new Error(
-					`Failed to download font from ${url}: ${response.status} ${response.statusText}`,
-				);
+				throw new Error(`Failed to download font from ${url}: ${response.status} ${response.statusText}`);
 			}
+
 			const buffer = Buffer.from(await response.arrayBuffer());
 			writeFileSync(cachedPath, buffer);
 		} finally {
@@ -114,15 +114,13 @@ export async function fetchCssFontSource(
 		const response = await fetch(cssUrl, {
 			signal: controller.signal,
 			headers: {
-				"User-Agent":
-					"Mozilla/5.0 (compatible; AstroFontLoader/1.0; +https://github.com/iveelsm/astro-font-loader)",
+				"User-Agent": "Mozilla/5.0 (compatible; AstroFontLoader/1.0; +https://github.com/iveelsm/astro-font-loader)",
 			},
 		});
 		if (!response.ok) {
-			throw new Error(
-				`Failed to fetch CSS from ${cssUrl}: ${response.status} ${response.statusText}`,
-			);
+			throw new Error(`Failed to fetch CSS from ${cssUrl}: ${response.status} ${response.statusText}`);
 		}
+
 		css = await response.text();
 	} finally {
 		clearTimeout(timeoutId);
