@@ -44,10 +44,7 @@ export function getFontsCss(
 	fontPackageInformation: FontsPackageInfo | null,
 ): string {
 	const { filter, outputDir = "fonts" } = options;
-	if (
-		!fontPackageInformation ||
-		!existsSync(fontPackageInformation.cssPath)
-	) {
+	if (!fontPackageInformation || !existsSync(fontPackageInformation.cssPath)) {
 		return "";
 	}
 

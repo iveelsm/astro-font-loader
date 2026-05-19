@@ -41,7 +41,5 @@ export function astroBuildDone(
 		}
 	}
 
-	logger.info(
-		`Copied ${availableFonts.length} font file(s) to ${outputDir}/`,
-	);
+	logger.info(`Copied ${availableFonts.length} font file(s) to ${outputDir}/`);
 }

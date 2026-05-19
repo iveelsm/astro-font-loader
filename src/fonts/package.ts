@@ -22,16 +22,13 @@ export function getFontsPackageInfo(
 		let requireBase: string;
 		if (root) {
 			const rootPath = root instanceof URL ? fileURLToPath(root) : root;
-
 			requireBase = join(rootPath, "package.json");
 		} else {
 			requireBase = import.meta.url;
 		}
 
 		const require = createRequire(requireBase);
-		const fontsPackagePath = require.resolve(
-			`${fontsPackage}/package.json`,
-		);
+		const fontsPackagePath = require.resolve(`${fontsPackage}/package.json`);
 		const fontsDir = dirname(fontsPackagePath);
 		const cssPath = join(fontsDir, "src", "index.css");
 		return { fontsDir, cssPath };

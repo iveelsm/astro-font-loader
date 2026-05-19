@@ -55,13 +55,10 @@ export async function astroConfigSetup(
 	let transformedCss = "";
 
 	if (packages.length === 0 && urls.length === 0) {
-		logger.warn(
-			"No font packages or URLs specified. Fonts will not be loaded.",
-		);
+		logger.warn("No font packages or URLs specified. Fonts will not be loaded.");
 		return { fontsInfoList: [], availableFonts, transformedCss };
 	}
 
-	// Phase 1: NPM packages
 	for (const packageName of packages) {
 		const fontsInfo = getFontsPackageInfo(packageName, root);
 		if (!fontsInfo) {
@@ -87,7 +84,6 @@ export async function astroConfigSetup(
 		);
 	}
 
-	// Phase 2: Network URL sources
 	if (urls.length > 0) {
 		const resolvedCacheDir = resolveCacheDir(cacheDir, root);
 		mkdirSync(resolvedCacheDir, { recursive: true });
@@ -107,13 +103,9 @@ export async function astroConfigSetup(
 						outputDir,
 						networkInfo.fonts,
 					);
-					logger.info(
-						`Loaded ${networkInfo.fonts.length} font file(s) from ${source.url}`,
-					);
+					logger.info(`Loaded ${networkInfo.fonts.length} font file(s) from ${source.url}`);
 				} else {
-					logger.info(
-						`Downloading ${source.fonts.length} direct font file(s)`,
-					);
+					logger.info(`Downloading ${source.fonts.length} direct font file(s)`);
 					const networkInfo = await fetchDirectFontSource(
 						source.fonts,
 						source.css,
@@ -126,9 +118,7 @@ export async function astroConfigSetup(
 						outputDir,
 						networkInfo.fonts,
 					);
-					logger.info(
-						`Loaded ${networkInfo.fonts.length} direct font file(s)`,
-					);
+					logger.info(`Loaded ${networkInfo.fonts.length} direct font file(s)`);
 				}
 			} catch (error) {
 				logger.error(`Failed to process network font source: ${error}`);
@@ -137,7 +127,6 @@ export async function astroConfigSetup(
 	}
 
 	logger.info(`Found ${availableFonts.length} total font file(s) to copy`);
-
 	return { fontsInfoList, availableFonts, transformedCss };
 }
 
@@ -145,6 +134,7 @@ function resolveCacheDir(cacheDir?: string, root?: URL): string {
 	if (cacheDir) {
 		return cacheDir;
 	}
+
 	const rootPath = root ? fileURLToPath(root) : process.cwd();
 	return join(rootPath, "node_modules", ".cache", "astro-font-loader");
 }
