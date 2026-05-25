@@ -44,13 +44,10 @@ const {
 	root = process.cwd(),
 } = Astro.props;
 
-const fontConfig = { family, source, variants: [variant] };
-
 let css = '';
+const fontConfig = { family, source, variants: [variant] };
 const preloadHrefs: Array<{ href: string; type: string }> = [];
-
 const packageInfo = getFontsPackageInfo(source.package, root, source.styleFile);
-
 if (packageInfo) {
 	const filter = createVariantFilter(fontConfig);
 

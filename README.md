@@ -32,11 +32,11 @@ pnpm add astro-font-loader
 
 1. **Setup Phase**: During Astro's config setup, the integration:
    - Locates the specified font packages in your `node_modules`
-   - Applies the filter function (if provided) to select fonts
+   - Derives a filter from the declared variants to select matching font files
    - Prepares the list of fonts to be copied
 
 2. **Build Phase**: After Astro completes the build:
-   - Copies the filtered font files to the output directory
+   - Copies the matched font files to the output directory
    - Transforms CSS imports to reference the copied fonts
    - Ensures fonts are available in your production build
 
@@ -51,149 +51,147 @@ import { defineConfig } from 'astro/config';
 import { fontsIntegration } from 'astro-font-loader';
 
 export default defineConfig({
-  site: 'https://example.com',
   integrations: [
     fontsIntegration({
-      packages: ["@company/design-system-fonts"],
+      outputDirectory: "fonts",
+      fonts: [
+        {
+          family: "Roboto",
+          source: { type: "package", package: "@company/design-system-fonts" },
+          variants: [
+            { name: "Roboto-Regular", weight: 400, styles: ["normal"] },
+            { name: "Roboto-Bold", weight: 700, styles: ["normal"] },
+          ],
+        },
+      ],
     }),
   ],
 });
 ```
 
-### Filtering Fonts
+### Multiple Font Families
 
-Use the `filter` option to selectively include only specific fonts from your font packages. This is useful when you have a large font library but only need certain fonts for your project:
-
-```typescript
-import { defineConfig } from 'astro/config';
-import { fontsIntegration } from 'astro-font-loader';
-
-// Define a filter function to select specific fonts
-const fontFilter = (filename: string) => {
-  const name = filename.toLowerCase();
-  return name.includes("hatton") || 
-         name.includes("berkeleymono");
-};
-
-export default defineConfig({
-  site: 'https://example.com',
-  integrations: [
-    fontsIntegration({
-      packages: ["@company/design-system-fonts"],
-      filter: fontFilter,
-    }),
-  ],
-});
-```
-
-### Custom Output Directory
-
-By default, fonts are copied to a `fonts` directory in your build output. You can customize this:
+A single package can provide multiple font families. Each family gets its own entry in the `fonts` array:
 
 ```typescript
 fontsIntegration({
-  packages: ["@company/design-system-fonts"],
-  filter: fontFilter,
-  outputDir: "assets/fonts", // Custom output directory
+  outputDirectory: "fonts",
+  fonts: [
+    {
+      family: "Berkeley Mono",
+      source: { type: "package", package: "@company/design-system-fonts" },
+      variants: [
+        { name: "BerkeleyMonoV2-Variable", weight: [100, 900], styles: ["normal"] },
+      ],
+    },
+    {
+      family: "EB Garamond",
+      source: { type: "package", package: "@company/design-system-fonts" },
+      variants: [
+        { name: "EBGaramond-SemiBold", weight: 600, styles: ["normal"] },
+        { name: "EBGaramond-Bold", weight: 700, styles: ["normal"] },
+      ],
+    },
+  ],
 })
 ```
 
-### Multiple Font Packages
+### Custom Style File
 
-You can load fonts from multiple packages:
+By default, the integration looks for CSS at `src/index.css` within the package. You can override this with `styleFile`:
 
 ```typescript
-fontsIntegration({
-  packages: [
-    "@company/design-system-fonts",
-    "@fontsource/roboto",
-    "@custom/typefaces"
-  ],
-  filter: (filename) => {
-    // Only include specific fonts from all packages
-    const name = filename.toLowerCase();
-    return name.includes("hatton") ||
-           name.includes("berkeleymono") ||
-           name.includes("roboto-400");
+{
+  family: "Custom Font",
+  source: {
+    type: "package",
+    package: "@company/fonts",
+    styleFile: "dist/fonts.css",
   },
-})
+  variants: [
+    { name: "CustomFont-Regular", weight: 400, styles: ["normal"] },
+  ],
+}
 ```
 
 ### FontLoader Component
 
-The library provides a `FontLoader` Astro component that generates `<link rel="preload">` tags and inline `@font-face` CSS for your fonts. Use it alongside the integration — the integration copies font files to the build output, while the component injects the HTML needed to load them.
+The `FontLoader` component generates `<link rel="preload">` tags and inline `@font-face` CSS for individual font variants. Use it alongside the integration — the integration copies font files to the build output, while the component injects the HTML needed to load them.
+
+Each `<FontLoader>` loads a single font variant:
 
 ```astro
 ---
-// src/layouts/Layout.astro
 import FontLoader from 'astro-font-loader/FontLoader.astro';
 ---
 <html>
   <head>
-    <FontLoader packages={['@company/design-system-fonts']} />
+    <FontLoader
+      variant={{ name: "Roboto-Regular", weight: 400, styles: ["normal"] }}
+      source={{ type: "package", package: "@company/design-system-fonts" }}
+      family="Roboto"
+      outputDirectory="fonts"
+    />
   </head>
   <body><slot /></body>
 </html>
 ```
 
-The component accepts the same `filter` and `outputDir` options as the integration:
+#### Separating CSS and Preload
+
+Use the `mode` prop to control what the component renders. This is useful when you want CSS and preload links in different locations, or need different `media` queries per variant:
 
 ```astro
 ---
 import FontLoader from 'astro-font-loader/FontLoader.astro';
 
-const fontFilter = (filename: string) =>
-  filename.toLowerCase().includes('roboto');
+const source = { type: "package" as const, package: "@company/design-system-fonts" };
 ---
+<!-- Preload links (in <head>, before CSS) -->
 <FontLoader
-  packages={['@company/design-system-fonts']}
-  filter={fontFilter}
-  outputDir="assets/fonts"
+  variant={{ name: "Roboto-Regular", weight: 400, styles: ["normal"] }}
+  source={source}
+  family="Roboto"
+  outputDirectory="fonts"
+  mode="preload"
+/>
+<FontLoader
+  variant={{ name: "Roboto-Bold", weight: 700, styles: ["normal"] }}
+  source={source}
+  family="Roboto"
+  outputDirectory="fonts"
+  mode="preload"
+  media="(min-width: 641px)"
+/>
+
+<!-- CSS (after preload links) -->
+<FontLoader
+  variant={{ name: "Roboto-Regular", weight: 400, styles: ["normal"] }}
+  source={source}
+  family="Roboto"
+  outputDirectory="fonts"
+  mode="css"
+/>
+<FontLoader
+  variant={{ name: "Roboto-Bold", weight: 700, styles: ["normal"] }}
+  source={source}
+  family="Roboto"
+  outputDirectory="fonts"
+  mode="css"
 />
 ```
 
-#### Selective Preloading with Media Queries
-
-The `preload` prop accepts an array of configurations for fine-grained control over which fonts are preloaded and with what media queries. This is useful for responsive font loading — for example, preloading a bold weight only on desktop:
-
-```astro
----
-import FontLoader from 'astro-font-loader/FontLoader.astro';
-
-const fontFilter = (filename: string) =>
-  filename.toLowerCase().includes('roboto');
----
-<FontLoader
-  packages={['@company/design-system-fonts']}
-  filter={fontFilter}
-  preload={[
-    {
-      filter: (f) => f.includes('roboto-regular'),
-    },
-    {
-      filter: (f) => f.includes('roboto-bold'),
-      media: '(min-width: 641px)',
-    },
-  ]}
-/>
-```
+#### Props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `packages` | `string[]` | (required) | Font package names to load |
-| `filter` | `(filename: string) => boolean` | `undefined` | Filter function to select font files |
-| `outputDir` | `string` | `"fonts"` | Output directory name in generated URLs |
-| `preload` | `boolean \| PreloadConfig[]` | `true` | Whether/how to generate preload link tags |
+| `variant` | `FontVariant` | (required) | The font variant to load |
+| `source` | `FontSource` | (required) | The source provider for this font |
+| `family` | `string` | (required) | Font family name |
+| `outputDirectory` | `string` | (required) | Output directory name in generated URLs |
+| `mode` | `"all" \| "css" \| "preload"` | `"all"` | What to render |
+| `media` | `string` | `undefined` | Media query for preload links |
 | `root` | `string` | `process.cwd()` | Root directory for resolving font packages |
-
-**`PreloadConfig`**
-
-| Property | Type | Required | Description |
-|----------|------|----------|-------------|
-| `filter` | `(filename: string) => boolean` | Yes | Filter to select which fonts to preload |
-| `media` | `string` | No | Media query for the preload link |
-
-
 
 ## Additional Documentation
 
