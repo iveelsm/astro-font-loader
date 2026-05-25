@@ -44,3 +44,21 @@ export type FontVariant = {
 	/** File formats to include. Defaults to ["woff2"]. */
 	formats?: string[];
 };
+
+/**
+ * Configuration for selectively preloading a font variant.
+ *
+ * Matches against FontVariant by name, and optionally by weight and styles
+ * for per-variant granularity. Omitting weight/styles matches all variants
+ * with that name.
+ */
+export type PreloadEntry = {
+	/** CSS font-family name to match. */
+	variant: string;
+	/** Narrow to a specific weight. If omitted, matches all weights for this variant. */
+	weight?: number | [number, number];
+	/** Narrow to specific styles. If omitted, matches all styles for this variant. */
+	styles?: string[];
+	/** Optional media query for the preload link. */
+	media?: string;
+};

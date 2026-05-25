@@ -52,7 +52,9 @@ import FontLoader from 'astro-font-loader/FontLoader.astro';
         },
       ]}
       outputDirectory="fonts"
-      preload={[{ variant: "Roboto" }]}
+      preload={[
+        { variant: "Roboto", weight: 400 },
+      ]}
     />
   </head>
   <body><slot /></body>
@@ -90,14 +92,15 @@ const source = { type: "package" as const, package: "@company/design-system-font
   outputDirectory="fonts"
   preload={[
     { variant: "Berkeley Mono v2 Variable" },
-    { variant: "EB Garamond" },
+    { variant: "EB Garamond", weight: 600 },
+    { variant: "EB Garamond", weight: 700 },
   ]}
 />
 ```
 
 ### Responsive Font Loading with Media Queries
 
-Use `preload` entries with `media` to conditionally preload fonts based on viewport size. Fonts not listed in `preload` still get their `@font-face` CSS — they just won't be preloaded:
+Use `preload` entries with `weight` to target specific variants, and `media` to conditionally preload based on viewport size. Fonts not listed in `preload` still get their `@font-face` CSS — they load normally without being preloaded:
 
 ```astro
 ---
@@ -126,14 +129,16 @@ const source = { type: "package" as const, package: "@company/design-system-font
   outputDirectory="fonts"
   preload={[
     { variant: "Berkeley Mono v2 Variable" },
-    { variant: "EB Garamond", media: "(min-width: 641px)" },
+    { variant: "EB Garamond", weight: 600 },
+    { variant: "EB Garamond", weight: 700, media: "(min-width: 641px)" },
   ]}
 />
 ```
 
 This outputs:
 - A preload link for the Berkeley Mono variable font (always)
-- A preload link for EB Garamond fonts (desktop only, via media query)
+- A preload link for EB Garamond SemiBold (always)
+- A preload link for EB Garamond Bold (desktop only, via media query)
 - Inline `@font-face` CSS for all matched variants
 
 ### Wrapping in a Component
@@ -170,7 +175,8 @@ const source = { type: "package" as const, package: "@company/design-system-font
   outputDirectory="fonts"
   preload={[
     { variant: "Berkeley Mono v2 Variable" },
-    { variant: "EB Garamond", media: "(min-width: 641px)" },
+    { variant: "EB Garamond", weight: 600 },
+    { variant: "EB Garamond", weight: 700, media: "(min-width: 641px)" },
   ]}
 />
 ```

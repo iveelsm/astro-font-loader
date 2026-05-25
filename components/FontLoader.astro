@@ -1,19 +1,14 @@
 ---
 import { getFontsPackageInfo } from '../src/fonts/index.ts';
 import { getFontsCss } from '../src/css/get.ts';
-import type { FontConfig } from '../src/types.ts';
-
-interface PreloadEntry {
-	variant: string;
-	media?: string;
-}
+import type { FontConfig, PreloadEntry } from '../src/types.ts';
 
 interface Props {
 	/** Font configurations to load. */
 	fonts: FontConfig[];
 	/** Output directory name used in generated font URLs. */
 	outputDirectory: string;
-	/** Variants to preload, with optional media queries. Matched against CSS font-family name. */
+	/** Variants to preload, with optional weight/style narrowing and media queries. */
 	preload?: PreloadEntry[];
 	/** Root directory to resolve font packages from. Defaults to process.cwd(). */
 	root?: string;
@@ -30,6 +25,16 @@ const MIME_TYPES: Record<string, string> = {
 function getMimeType(filename: string): string {
 	const ext = filename.split('.').pop()?.toLowerCase() ?? '';
 	return MIME_TYPES[ext] ?? 'font/woff2';
+}
+
+function weightEquals(
+	a: number | [number, number],
+	b: number | [number, number],
+): boolean {
+	if (Array.isArray(a) && Array.isArray(b)) {
+		return a[0] === b[0] && a[1] === b[1];
+	}
+	return a === b;
 }
 
 const {
@@ -55,7 +60,22 @@ for (const fontConfig of fonts) {
 		);
 		allCss += result.css;
 
-		const entry = preload.find((p) => p.variant.toLowerCase() === variant.name.toLowerCase());
+		const entry = preload.find((p) => {
+			if (p.variant.toLowerCase() !== variant.name.toLowerCase()) {
+				return false;
+			}
+
+			if (p.weight !== undefined && !weightEquals(p.weight, variant.weight)) {
+				return false;
+			}
+
+			if (p.styles && !p.styles.every((s) => variant.styles.includes(s))) {
+				return false;
+			}
+
+			return true;
+		});
+
 		if (entry) {
 			for (const filename of result.filenames) {
 				const href = `/${outputDirectory}/${filename}`;

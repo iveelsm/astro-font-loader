@@ -86,6 +86,8 @@ import FontLoader from 'astro-font-loader/FontLoader.astro';
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
 | `variant` | `string` | Yes | CSS font-family name to match for preloading |
+| `weight` | `number \| [number, number]` | No | Narrow to a specific weight. Omit to match all weights for this variant |
+| `styles` | `string[]` | No | Narrow to specific styles. Omit to match all styles for this variant |
 | `media` | `string` | No | Media query for the preload link (e.g., `"(min-width: 641px)"`) |
 
 #### Output
@@ -93,6 +95,8 @@ import FontLoader from 'astro-font-loader/FontLoader.astro';
 The component renders:
 1. A `<link rel="preload">` tag for each matched font file whose variant appears in `preload`
 2. An inline `<style>` tag containing the matched and transformed `@font-face` CSS
+
+Fonts not listed in `preload` still get their `@font-face` CSS injected — they load normally without being preloaded.
 
 Duplicate font files (e.g., a variable font serving both `normal` and `oblique` styles) are automatically deduplicated in preload output.
 

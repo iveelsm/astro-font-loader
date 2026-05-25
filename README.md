@@ -146,7 +146,8 @@ const source = { type: "package" as const, package: "@company/design-system-font
       outputDirectory="fonts"
       preload={[
         { variant: "Berkeley Mono v2 Variable" },
-        { variant: "EB Garamond", media: "(min-width: 641px)" },
+        { variant: "EB Garamond", weight: 600 },
+        { variant: "EB Garamond", weight: 700, media: "(min-width: 641px)" },
       ]}
     />
   </head>
@@ -156,16 +157,17 @@ const source = { type: "package" as const, package: "@company/design-system-font
 
 #### Selective Preloading with Media Queries
 
-The `preload` prop accepts an array of entries that match variants by their CSS `font-family` name. Each entry can include an optional `media` query to conditionally preload fonts based on viewport size:
+The `preload` prop accepts an array of entries that match variants by their CSS `font-family` name, and optionally by `weight` and `styles` for per-variant granularity. Each entry can include an optional `media` query to conditionally preload fonts based on viewport size:
 
 ```typescript
 preload={[
-  { variant: "Berkeley Mono v2 Variable" },          // always preload
-  { variant: "EB Garamond", media: "(min-width: 641px)" },  // desktop only
+  { variant: "Berkeley Mono v2 Variable" },                    // always preload
+  { variant: "EB Garamond", weight: 600 },                     // always preload semibold
+  { variant: "EB Garamond", weight: 700, media: "(min-width: 641px)" },  // bold on desktop only
 ]}
 ```
 
-Fonts matched by a variant in `preload` get a `<link rel="preload">` tag. Fonts not listed in `preload` still get their `@font-face` CSS injected — they just won't be preloaded.
+Fonts matched by an entry in `preload` get a `<link rel="preload">` tag. Fonts not listed in `preload` still get their `@font-face` CSS injected — they load normally without being preloaded.
 
 #### Props
 
@@ -173,7 +175,7 @@ Fonts matched by a variant in `preload` get a `<link rel="preload">` tag. Fonts 
 |------|------|---------|-------------|
 | `fonts` | `FontConfig[]` | (required) | Font configurations to load |
 | `outputDirectory` | `string` | (required) | Output directory name in generated URLs |
-| `preload` | `PreloadEntry[]` | `[]` | Variants to preload, matched by CSS font-family name |
+| `preload` | `PreloadEntry[]` | `[]` | Variants to preload, with optional weight/style narrowing |
 | `root` | `string` | `process.cwd()` | Root directory for resolving font packages |
 
 **`PreloadEntry`**
@@ -181,6 +183,8 @@ Fonts matched by a variant in `preload` get a `<link rel="preload">` tag. Fonts 
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
 | `variant` | `string` | Yes | CSS font-family name to match for preloading |
+| `weight` | `number \| [number, number]` | No | Narrow to a specific weight. Omit to match all weights |
+| `styles` | `string[]` | No | Narrow to specific styles. Omit to match all styles |
 | `media` | `string` | No | Media query for the preload link |
 
 ## Additional Documentation
