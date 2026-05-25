@@ -27,15 +27,7 @@ describe("transformCss", () => {
 		assert.ok(result.includes('url("/assets/fonts/OpenSans-Bold.woff2")'));
 	});
 
-	it("should not transform URLs when filter excludes them", () => {
-		const filter = (filename: string) => filename.includes("Roboto");
-		const result = transformCss(sampleCss, "fonts", filter);
-
-		assert.ok(result.includes('url("/fonts/Roboto-Regular.woff2")'));
-		assert.ok(result.includes("./OpenSans/OpenSans-Bold.woff2"));
-	});
-
-	it("should transform all URLs when no filter is provided", () => {
+	it("should transform all URLs", () => {
 		const result = transformCss(sampleCss, "fonts");
 
 		assert.ok(!result.includes("./Roboto/"));

@@ -31,7 +31,7 @@ export default defineConfig({
           family: "Berkeley Mono",
           source: { type: "package", package: "@company/design-system-fonts" },
           variants: [
-            { name: "BerkeleyMonoV2-Variable", weight: [100, 900], styles: ["normal"] },
+            { name: "Berkeley Mono v2 Variable", weight: [100, 900], styles: ["normal", "oblique"] },
           ],
         },
       ],
@@ -46,17 +46,29 @@ export default defineConfig({
 
 ### `FontLoader`
 
-An Astro component that generates `<link rel="preload">` tags and inline `@font-face` CSS for a single font variant. Use alongside the integration — the integration copies fonts at build time, while the component injects the HTML to load them.
+An Astro component that generates `<link rel="preload">` tags and inline `@font-face` CSS. Use alongside the integration — the integration copies fonts at build time, while the component injects the HTML to load them.
+
+The component matches `@font-face` rules from the package CSS by `font-family`, `font-weight`, and `font-style`, then inlines the matched CSS and optionally emits preload links.
 
 ```astro
 ---
 import FontLoader from 'astro-font-loader/FontLoader.astro';
 ---
 <FontLoader
-  variant={{ name: "Roboto-Regular", weight: 400, styles: ["normal"] }}
-  source={{ type: "package", package: "@company/design-system-fonts" }}
-  family="Roboto"
+  fonts={[
+    {
+      family: "Roboto",
+      source: { type: "package", package: "@company/design-system-fonts" },
+      variants: [
+        { name: "Roboto", weight: 400, styles: ["normal"] },
+        { name: "Roboto", weight: 700, styles: ["normal"] },
+      ],
+    },
+  ]}
   outputDirectory="fonts"
+  preload={[
+    { variant: "Roboto" },
+  ]}
 />
 ```
 
@@ -64,13 +76,25 @@ import FontLoader from 'astro-font-loader/FontLoader.astro';
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `variant` | `FontVariant` | (required) | The font variant to load |
-| `source` | `FontSource` | (required) | The source provider for this font |
-| `family` | `string` | (required) | Font family name |
+| `fonts` | `FontConfig[]` | (required) | Font configurations to load |
 | `outputDirectory` | `string` | (required) | Output directory name in generated URLs |
-| `mode` | `"all" \| "css" \| "preload"` | `"all"` | Controls what is rendered: `"all"` emits both preload links and CSS, `"css"` emits only the `<style>` tag, `"preload"` emits only `<link>` tags |
-| `media` | `string` | `undefined` | Media query applied to preload links (only used when mode is `"all"` or `"preload"`) |
+| `preload` | `PreloadEntry[]` | `[]` | Variants to preload, matched by CSS font-family name |
 | `root` | `string` | `process.cwd()` | Root directory for resolving font packages |
+
+#### `PreloadEntry`
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `variant` | `string` | Yes | CSS font-family name to match for preloading |
+| `media` | `string` | No | Media query for the preload link (e.g., `"(min-width: 641px)"`) |
+
+#### Output
+
+The component renders:
+1. A `<link rel="preload">` tag for each matched font file whose variant appears in `preload`
+2. An inline `<style>` tag containing the matched and transformed `@font-face` CSS
+
+Duplicate font files (e.g., a variable font serving both `normal` and `oblique` styles) are automatically deduplicated in preload output.
 
 ---
 
@@ -121,7 +145,7 @@ type PackageProvider = {
 
 ### `FontVariant`
 
-A specific font variant to load. The `name` is matched case-insensitively against font filenames in the package.
+A specific font variant to load. The `name` is matched case-insensitively against the `font-family` property in `@font-face` CSS rules. The `weight` and `styles` further narrow which rules match.
 
 ```typescript
 import type { FontVariant } from 'astro-font-loader';
@@ -136,7 +160,7 @@ type FontVariant = {
 
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
-| `name` | `string` | Yes | Name used to match font filenames (case-insensitive) |
+| `name` | `string` | Yes | CSS `font-family` value to match (case-insensitive) |
 | `weight` | `number \| [number, number]` | Yes | Font weight as a single value or `[min, max]` range for variable fonts |
-| `styles` | `string[]` | Yes | Font styles (e.g., `["normal"]`, `["normal", "italic"]`) |
-| `formats` | `string[]` | No | File formats to include. Defaults to `["woff2"]` |
+| `styles` | `string[]` | Yes | Font styles to match (e.g., `["normal"]`, `["normal", "italic"]`) |
+| `formats` | `string[]` | No | File formats to include from matched rules. Defaults to `["woff2"]` |

@@ -1,12 +1,8 @@
-import { existsSync, readFileSync } from "node:fs";
-
 import type { AstroIntegrationLogger } from "astro";
 
-import { filterCssFontFaces } from "./css/filter.ts";
-import { transformCss } from "./css/transform.ts";
-import { getAvailableFonts } from "./fonts/available.ts";
-import { createVariantFilter } from "./fonts/filter.ts";
+import { getFontsCss } from "./css/get.ts";
 import type { FontInfo, FontsPackageInfo } from "./fonts/fontInfo.ts";
+import { getAvailableFonts } from "./fonts/available.ts";
 import { getFontsPackageInfo } from "./fonts/index.ts";
 import type { FontConfig } from "./types.ts";
 
@@ -16,13 +12,12 @@ import type { FontConfig } from "./types.ts";
 export type ConfigSetupResult = {
 	fontsInfoList: FontsPackageInfo[];
 	availableFonts: FontInfo[];
-	transformedCss: string;
 };
 
 /**
  * Sets up font configuration for the Astro integration.
  *
- * Resolves font packages, collects available fonts, applies variant-derived filtering, and transforms CSS.
+ * Resolves font packages, collects available fonts by matching CSS metadata.
  */
 export function astroConfigSetup(
 	logger: AstroIntegrationLogger,
@@ -32,11 +27,10 @@ export function astroConfigSetup(
 ): ConfigSetupResult {
 	const fontsInfoList: FontsPackageInfo[] = [];
 	let availableFonts: FontInfo[] = [];
-	let transformedCss = "";
 
 	if (!fonts || fonts.length === 0) {
 		logger.warn("No fonts specified. Fonts will not be copied.");
-		return { fontsInfoList: [], availableFonts, transformedCss };
+		return { fontsInfoList: [], availableFonts };
 	}
 
 	for (const fontConfig of fonts) {
@@ -48,21 +42,26 @@ export function astroConfigSetup(
 		}
 
 		fontsInfoList.push(fontsInfo);
-		const filter = createVariantFilter(fontConfig);
-		let packageFonts = getAvailableFonts(fontsInfo.fontsDir);
-		packageFonts = packageFonts.filter((font) => filter(font.filename));
 
-		availableFonts = availableFonts.concat(packageFonts);
-		if (existsSync(fontsInfo.cssPath)) {
-			let rawCss = readFileSync(fontsInfo.cssPath, "utf-8");
-			rawCss = filterCssFontFaces(rawCss, filter);
-			transformedCss += transformCss(rawCss, outputDirectory, filter);
+		for (const variant of fontConfig.variants) {
+			const result = getFontsCss(
+				{ name: variant.name, variants: [variant], outputDirectory },
+				fontsInfo,
+			);
+
+			const allPackageFonts = getAvailableFonts(fontsInfo.fontsDir);
+			const matchedFonts = allPackageFonts.filter((f) =>
+				result.filenames.includes(f.filename),
+			);
+			availableFonts = availableFonts.concat(matchedFonts);
+
+			logger.info(
+				`Loaded ${matchedFonts.length} font file(s) for ${fontConfig.family} (${variant.name}) from ${source.package}`,
+			);
 		}
-
-		logger.info(`Loaded ${packageFonts.length} font file(s) for ${fontConfig.family} from ${source.package}`);
 	}
 
 	logger.info(`Found ${availableFonts.length} total font file(s) to copy`);
 
-	return { fontsInfoList, availableFonts, transformedCss };
+	return { fontsInfoList, availableFonts };
 }

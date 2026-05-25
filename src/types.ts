@@ -35,11 +35,11 @@ export type PackageProvider = {
  * A specific font variant to load.
  */
 export type FontVariant = {
-	/** Name used to match font filenames (case-insensitive). */
+	/** The CSS font-family name to match in @font-face rules (case-insensitive). */
 	name: string;
 	/** Font weight as a single value or a [min, max] range for variable fonts. */
 	weight: number | [number, number];
-	/** Font styles to include, e.g. ["normal", "italic"]. */
+	/** Font styles to match, e.g. ["normal", "italic"]. */
 	styles: string[];
 	/** File formats to include. Defaults to ["woff2"]. */
 	formats?: string[];

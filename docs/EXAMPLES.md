@@ -16,8 +16,8 @@ export default defineConfig({
           family: "Roboto",
           source: { type: "package", package: "@fontsource/roboto" },
           variants: [
-            { name: "Roboto-Regular", weight: 400, styles: ["normal"] },
-            { name: "Roboto-Bold", weight: 700, styles: ["normal"] },
+            { name: "Roboto", weight: 400, styles: ["normal"] },
+            { name: "Roboto", weight: 700, styles: ["normal"] },
           ],
         },
       ],
@@ -30,9 +30,9 @@ export default defineConfig({
 
 ## FontLoader Component
 
-### Loading a Single Font
+### Basic Usage
 
-Each `<FontLoader>` handles one font variant — it resolves the package, filters the matching file, generates the `@font-face` CSS, and emits a preload link.
+A single `<FontLoader>` handles all your fonts — it matches `@font-face` rules from the package CSS by `font-family`, `font-weight`, and `font-style`, inlines the CSS, and emits preload links.
 
 ```astro
 ---
@@ -41,19 +41,27 @@ import FontLoader from 'astro-font-loader/FontLoader.astro';
 <html>
   <head>
     <FontLoader
-      variant={{ name: "Roboto-Regular", weight: 400, styles: ["normal"] }}
-      source={{ type: "package", package: "@fontsource/roboto" }}
-      family="Roboto"
+      fonts={[
+        {
+          family: "Roboto",
+          source: { type: "package", package: "@fontsource/roboto" },
+          variants: [
+            { name: "Roboto", weight: 400, styles: ["normal"] },
+            { name: "Roboto", weight: 700, styles: ["normal"] },
+          ],
+        },
+      ]}
       outputDirectory="fonts"
+      preload={[{ variant: "Roboto" }]}
     />
   </head>
   <body><slot /></body>
 </html>
 ```
 
-### Multiple Fonts with Shared Source
+### Multiple Families with Shared Source
 
-When loading multiple fonts from the same package, extract the source to avoid repetition:
+When loading multiple font families from the same package, extract the source to avoid repetition:
 
 ```astro
 ---
@@ -61,34 +69,35 @@ import FontLoader from 'astro-font-loader/FontLoader.astro';
 
 const source = { type: "package" as const, package: "@company/design-system-fonts" };
 ---
-<html>
-  <head>
-    <FontLoader
-      variant={{ name: "BerkeleyMonoV2-Variable", weight: [100, 900], styles: ["normal"] }}
-      source={source}
-      family="Berkeley Mono"
-      outputDirectory="fonts"
-    />
-    <FontLoader
-      variant={{ name: "EBGaramond-SemiBold", weight: 600, styles: ["normal"] }}
-      source={source}
-      family="EB Garamond"
-      outputDirectory="fonts"
-    />
-    <FontLoader
-      variant={{ name: "EBGaramond-Bold", weight: 700, styles: ["normal"] }}
-      source={source}
-      family="EB Garamond"
-      outputDirectory="fonts"
-    />
-  </head>
-  <body><slot /></body>
-</html>
+<FontLoader
+  fonts={[
+    {
+      family: "Berkeley Mono",
+      source,
+      variants: [
+        { name: "Berkeley Mono v2 Variable", weight: [100, 900], styles: ["normal", "oblique"] },
+      ],
+    },
+    {
+      family: "EB Garamond",
+      source,
+      variants: [
+        { name: "EB Garamond", weight: 600, styles: ["normal"] },
+        { name: "EB Garamond", weight: 700, styles: ["normal"] },
+      ],
+    },
+  ]}
+  outputDirectory="fonts"
+  preload={[
+    { variant: "Berkeley Mono v2 Variable" },
+    { variant: "EB Garamond" },
+  ]}
+/>
 ```
 
 ### Responsive Font Loading with Media Queries
 
-Use `mode` and `media` to preload fonts conditionally. For example, preload a bold weight only on desktop while always loading its CSS:
+Use `preload` entries with `media` to conditionally preload fonts based on viewport size. Fonts not listed in `preload` still get their `@font-face` CSS — they just won't be preloaded:
 
 ```astro
 ---
@@ -96,136 +105,84 @@ import FontLoader from 'astro-font-loader/FontLoader.astro';
 
 const source = { type: "package" as const, package: "@company/design-system-fonts" };
 ---
-<head>
-  <!-- Preload: always load the primary fonts -->
-  <FontLoader
-    variant={{ name: "BerkeleyMonoV2-Variable", weight: [100, 900], styles: ["normal"] }}
-    source={source}
-    family="Berkeley Mono"
-    outputDirectory="fonts"
-    mode="preload"
-  />
-  <FontLoader
-    variant={{ name: "EBGaramond-SemiBold", weight: 600, styles: ["normal"] }}
-    source={source}
-    family="EB Garamond"
-    outputDirectory="fonts"
-    mode="preload"
-  />
-
-  <!-- Preload: bold weight only on desktop -->
-  <FontLoader
-    variant={{ name: "EBGaramond-Bold", weight: 700, styles: ["normal"] }}
-    source={source}
-    family="EB Garamond"
-    outputDirectory="fonts"
-    mode="preload"
-    media="(min-width: 641px)"
-  />
-
-  <!-- CSS for all variants -->
-  <FontLoader
-    variant={{ name: "BerkeleyMonoV2-Variable", weight: [100, 900], styles: ["normal"] }}
-    source={source}
-    family="Berkeley Mono"
-    outputDirectory="fonts"
-    mode="css"
-  />
-  <FontLoader
-    variant={{ name: "EBGaramond-SemiBold", weight: 600, styles: ["normal"] }}
-    source={source}
-    family="EB Garamond"
-    outputDirectory="fonts"
-    mode="css"
-  />
-  <FontLoader
-    variant={{ name: "EBGaramond-Bold", weight: 700, styles: ["normal"] }}
-    source={source}
-    family="EB Garamond"
-    outputDirectory="fonts"
-    mode="css"
-  />
-</head>
+<FontLoader
+  fonts={[
+    {
+      family: "Berkeley Mono",
+      source,
+      variants: [
+        { name: "Berkeley Mono v2 Variable", weight: [100, 900], styles: ["normal", "oblique"] },
+      ],
+    },
+    {
+      family: "EB Garamond",
+      source,
+      variants: [
+        { name: "EB Garamond", weight: 600, styles: ["normal"] },
+        { name: "EB Garamond", weight: 700, styles: ["normal"] },
+      ],
+    },
+  ]}
+  outputDirectory="fonts"
+  preload={[
+    { variant: "Berkeley Mono v2 Variable" },
+    { variant: "EB Garamond", media: "(min-width: 641px)" },
+  ]}
+/>
 ```
 
-### Composing Font Components
+This outputs:
+- A preload link for the Berkeley Mono variable font (always)
+- A preload link for EB Garamond fonts (desktop only, via media query)
+- Inline `@font-face` CSS for all matched variants
 
-For cleaner layouts, wrap your font loading in dedicated components:
+### Wrapping in a Component
 
-**`src/components/fonts/fonts.astro`** — CSS only:
+For cleaner layouts, wrap your font loading in a dedicated component:
+
+**`src/components/fonts/fonts.astro`**:
 
 ```astro
 ---
-import FontLoader from 'astro-font-loader/FontLoader.astro';
+import FontLoader from "astro-font-loader/FontLoader.astro";
 
 const source = { type: "package" as const, package: "@company/design-system-fonts" };
 ---
 
 <FontLoader
-  variant={{ name: "BerkeleyMonoV2-Variable", weight: [100, 900], styles: ["normal"] }}
-  source={source}
-  family="Berkeley Mono"
+  fonts={[
+    {
+      family: "Berkeley Mono",
+      source,
+      variants: [
+        { name: "Berkeley Mono v2 Variable", weight: [100, 900], styles: ["normal", "oblique"] },
+      ],
+    },
+    {
+      family: "EB Garamond",
+      source,
+      variants: [
+        { name: "EB Garamond", weight: 600, styles: ["normal"] },
+        { name: "EB Garamond", weight: 700, styles: ["normal"] },
+      ],
+    },
+  ]}
   outputDirectory="fonts"
-  mode="css"
-/>
-<FontLoader
-  variant={{ name: "EBGaramond-SemiBold", weight: 600, styles: ["normal"] }}
-  source={source}
-  family="EB Garamond"
-  outputDirectory="fonts"
-  mode="css"
-/>
-<FontLoader
-  variant={{ name: "EBGaramond-Bold", weight: 700, styles: ["normal"] }}
-  source={source}
-  family="EB Garamond"
-  outputDirectory="fonts"
-  mode="css"
-/>
-```
-
-**`src/components/fonts/preloadFonts.astro`** — Preload links with media queries:
-
-```astro
----
-import FontLoader from 'astro-font-loader/FontLoader.astro';
-
-const source = { type: "package" as const, package: "@company/design-system-fonts" };
----
-
-<FontLoader
-  variant={{ name: "BerkeleyMonoV2-Variable", weight: [100, 900], styles: ["normal"] }}
-  source={source}
-  family="Berkeley Mono"
-  outputDirectory="fonts"
-  mode="preload"
-/>
-<FontLoader
-  variant={{ name: "EBGaramond-SemiBold", weight: 600, styles: ["normal"] }}
-  source={source}
-  family="EB Garamond"
-  outputDirectory="fonts"
-  mode="preload"
-/>
-<FontLoader
-  variant={{ name: "EBGaramond-Bold", weight: 700, styles: ["normal"] }}
-  source={source}
-  family="EB Garamond"
-  outputDirectory="fonts"
-  mode="preload"
-  media="(min-width: 641px)"
+  preload={[
+    { variant: "Berkeley Mono v2 Variable" },
+    { variant: "EB Garamond", media: "(min-width: 641px)" },
+  ]}
 />
 ```
 
-**`src/layouts/Layout.astro`** — Compose them:
+**`src/layouts/Layout.astro`**:
 
 ```astro
 ---
-import { PreloadFonts, Fonts } from '../components/fonts';
+import Fonts from '../components/fonts/fonts.astro';
 ---
 <html>
   <head>
-    <PreloadFonts />
     <Fonts />
   </head>
   <body><slot /></body>
@@ -236,7 +193,7 @@ import { PreloadFonts, Fonts } from '../components/fonts';
 
 ## Variable Fonts
 
-Use a weight range for variable fonts:
+Variable fonts often serve multiple styles from a single file. Use a weight range and list all styles. Duplicate font files are automatically deduplicated in the output:
 
 ```typescript
 {
@@ -244,8 +201,8 @@ Use a weight range for variable fonts:
   source: { type: "package", package: "@company/fonts" },
   variants: [
     {
-      name: "BerkeleyMonoV2-Variable",
-      weight: [100, 900],        // variable font weight range
+      name: "Berkeley Mono v2 Variable",
+      weight: [100, 900],
       styles: ["normal", "oblique"],
     },
   ],
@@ -254,7 +211,7 @@ Use a weight range for variable fonts:
 
 ## Multiple Formats
 
-By default only `.woff2` files are matched. To include additional formats:
+By default only `.woff2` files are included from matched `@font-face` rules. To include additional formats:
 
 ```typescript
 {
@@ -262,7 +219,7 @@ By default only `.woff2` files are matched. To include additional formats:
   source: { type: "package", package: "@company/fonts" },
   variants: [
     {
-      name: "LegacyFont-Regular",
+      name: "Legacy Font",
       weight: 400,
       styles: ["normal"],
       formats: ["woff2", "woff", "ttf"],
@@ -284,7 +241,7 @@ If your font package uses a non-standard CSS path:
     styleFile: "dist/fonts.css",  // instead of the default "src/index.css"
   },
   variants: [
-    { name: "CustomFont-Regular", weight: 400, styles: ["normal"] },
+    { name: "Custom Font", weight: 400, styles: ["normal"] },
   ],
 }
 ```

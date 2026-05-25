@@ -32,19 +32,18 @@ pnpm add astro-font-loader
 
 1. **Setup Phase**: During Astro's config setup, the integration:
    - Locates the specified font packages in your `node_modules`
-   - Derives a filter from the declared variants to select matching font files
-   - Prepares the list of fonts to be copied
+   - Matches `@font-face` rules from the package CSS by `font-family`, `font-weight`, and `font-style`
+   - Prepares the list of font files to be copied
 
 2. **Build Phase**: After Astro completes the build:
    - Copies the matched font files to the output directory
-   - Transforms CSS imports to reference the copied fonts
    - Ensures fonts are available in your production build
 
 ## Usage
 
 ### Basic Setup
 
-Add the integration to your `astro.config.mjs` or `astro.config.ts` file:
+Add the integration to your `astro.config.mjs` or `astro.config.ts` file. The variant `name` should match the `font-family` value in the package's CSS `@font-face` rules:
 
 ```typescript
 import { defineConfig } from 'astro/config';
@@ -59,8 +58,8 @@ export default defineConfig({
           family: "Roboto",
           source: { type: "package", package: "@company/design-system-fonts" },
           variants: [
-            { name: "Roboto-Regular", weight: 400, styles: ["normal"] },
-            { name: "Roboto-Bold", weight: 700, styles: ["normal"] },
+            { name: "Roboto", weight: 400, styles: ["normal"] },
+            { name: "Roboto", weight: 700, styles: ["normal"] },
           ],
         },
       ],
@@ -81,15 +80,15 @@ fontsIntegration({
       family: "Berkeley Mono",
       source: { type: "package", package: "@company/design-system-fonts" },
       variants: [
-        { name: "BerkeleyMonoV2-Variable", weight: [100, 900], styles: ["normal"] },
+        { name: "Berkeley Mono v2 Variable", weight: [100, 900], styles: ["normal", "oblique"] },
       ],
     },
     {
       family: "EB Garamond",
       source: { type: "package", package: "@company/design-system-fonts" },
       variants: [
-        { name: "EBGaramond-SemiBold", weight: 600, styles: ["normal"] },
-        { name: "EBGaramond-Bold", weight: 700, styles: ["normal"] },
+        { name: "EB Garamond", weight: 600, styles: ["normal"] },
+        { name: "EB Garamond", weight: 700, styles: ["normal"] },
       ],
     },
   ],
@@ -109,37 +108,14 @@ By default, the integration looks for CSS at `src/index.css` within the package.
     styleFile: "dist/fonts.css",
   },
   variants: [
-    { name: "CustomFont-Regular", weight: 400, styles: ["normal"] },
+    { name: "Custom Font", weight: 400, styles: ["normal"] },
   ],
 }
 ```
 
 ### FontLoader Component
 
-The `FontLoader` component generates `<link rel="preload">` tags and inline `@font-face` CSS for individual font variants. Use it alongside the integration — the integration copies font files to the build output, while the component injects the HTML needed to load them.
-
-Each `<FontLoader>` loads a single font variant:
-
-```astro
----
-import FontLoader from 'astro-font-loader/FontLoader.astro';
----
-<html>
-  <head>
-    <FontLoader
-      variant={{ name: "Roboto-Regular", weight: 400, styles: ["normal"] }}
-      source={{ type: "package", package: "@company/design-system-fonts" }}
-      family="Roboto"
-      outputDirectory="fonts"
-    />
-  </head>
-  <body><slot /></body>
-</html>
-```
-
-#### Separating CSS and Preload
-
-Use the `mode` prop to control what the component renders. This is useful when you want CSS and preload links in different locations, or need different `media` queries per variant:
+The `FontLoader` component generates `<link rel="preload">` tags and inline `@font-face` CSS. Use it alongside the integration — the integration copies font files to the build output, while the component injects the HTML needed to load them.
 
 ```astro
 ---
@@ -147,51 +123,65 @@ import FontLoader from 'astro-font-loader/FontLoader.astro';
 
 const source = { type: "package" as const, package: "@company/design-system-fonts" };
 ---
-<!-- Preload links (in <head>, before CSS) -->
-<FontLoader
-  variant={{ name: "Roboto-Regular", weight: 400, styles: ["normal"] }}
-  source={source}
-  family="Roboto"
-  outputDirectory="fonts"
-  mode="preload"
-/>
-<FontLoader
-  variant={{ name: "Roboto-Bold", weight: 700, styles: ["normal"] }}
-  source={source}
-  family="Roboto"
-  outputDirectory="fonts"
-  mode="preload"
-  media="(min-width: 641px)"
-/>
-
-<!-- CSS (after preload links) -->
-<FontLoader
-  variant={{ name: "Roboto-Regular", weight: 400, styles: ["normal"] }}
-  source={source}
-  family="Roboto"
-  outputDirectory="fonts"
-  mode="css"
-/>
-<FontLoader
-  variant={{ name: "Roboto-Bold", weight: 700, styles: ["normal"] }}
-  source={source}
-  family="Roboto"
-  outputDirectory="fonts"
-  mode="css"
-/>
+<html>
+  <head>
+    <FontLoader
+      fonts={[
+        {
+          family: "Berkeley Mono",
+          source,
+          variants: [
+            { name: "Berkeley Mono v2 Variable", weight: [100, 900], styles: ["normal", "oblique"] },
+          ],
+        },
+        {
+          family: "EB Garamond",
+          source,
+          variants: [
+            { name: "EB Garamond", weight: 600, styles: ["normal"] },
+            { name: "EB Garamond", weight: 700, styles: ["normal"] },
+          ],
+        },
+      ]}
+      outputDirectory="fonts"
+      preload={[
+        { variant: "Berkeley Mono v2 Variable" },
+        { variant: "EB Garamond", media: "(min-width: 641px)" },
+      ]}
+    />
+  </head>
+  <body><slot /></body>
+</html>
 ```
+
+#### Selective Preloading with Media Queries
+
+The `preload` prop accepts an array of entries that match variants by their CSS `font-family` name. Each entry can include an optional `media` query to conditionally preload fonts based on viewport size:
+
+```typescript
+preload={[
+  { variant: "Berkeley Mono v2 Variable" },          // always preload
+  { variant: "EB Garamond", media: "(min-width: 641px)" },  // desktop only
+]}
+```
+
+Fonts matched by a variant in `preload` get a `<link rel="preload">` tag. Fonts not listed in `preload` still get their `@font-face` CSS injected — they just won't be preloaded.
 
 #### Props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `variant` | `FontVariant` | (required) | The font variant to load |
-| `source` | `FontSource` | (required) | The source provider for this font |
-| `family` | `string` | (required) | Font family name |
+| `fonts` | `FontConfig[]` | (required) | Font configurations to load |
 | `outputDirectory` | `string` | (required) | Output directory name in generated URLs |
-| `mode` | `"all" \| "css" \| "preload"` | `"all"` | What to render |
-| `media` | `string` | `undefined` | Media query for preload links |
+| `preload` | `PreloadEntry[]` | `[]` | Variants to preload, matched by CSS font-family name |
 | `root` | `string` | `process.cwd()` | Root directory for resolving font packages |
+
+**`PreloadEntry`**
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `variant` | `string` | Yes | CSS font-family name to match for preloading |
+| `media` | `string` | No | Media query for the preload link |
 
 ## Additional Documentation
 
