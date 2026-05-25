@@ -30,10 +30,7 @@ function parseFontFace(block: string) {
  *
  * A single weight matches if equal. A range matches if any overlap exists.
  */
-function weightMatches(
-	cssWeight: number | [number, number],
-	variantWeight: number | [number, number],
-): boolean {
+function weightMatches(cssWeight: number | [number, number], variantWeight: number | [number, number]): boolean {
 	const [cssMin, cssMax] = Array.isArray(cssWeight) ? cssWeight : [cssWeight, cssWeight];
 	const [varMin, varMax] = Array.isArray(variantWeight) ? variantWeight : [variantWeight, variantWeight];
 	return cssMin <= varMax && varMin <= cssMax;
@@ -53,11 +50,7 @@ export type CssMatchResult = {
  *
  * Returns the matched CSS blocks and the font filenames they reference.
  */
-export function matchCssFontFaces(
-	css: string,
-	name: string,
-	variants: FontVariant[],
-): CssMatchResult {
+export function matchCssFontFaces(css: string, name: string, variants: FontVariant[]): CssMatchResult {
 	const filenameSet = new Set<string>();
 	const formats = new Set(variants.flatMap((v) => v.formats ?? ["woff2"]));
 
@@ -68,11 +61,7 @@ export function matchCssFontFaces(
 			return "";
 		}
 
-		const matches = variants.some(
-			(v) =>
-				weightMatches(parsed.weight, v.weight) &&
-				v.styles.includes(parsed.style),
-		);
+		const matches = variants.some((v) => weightMatches(parsed.weight, v.weight) && v.styles.includes(parsed.style));
 
 		if (!matches) {
 			return "";

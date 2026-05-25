@@ -1,8 +1,8 @@
 import type { AstroIntegrationLogger } from "astro";
 
 import { getFontsCss } from "./css/get.ts";
-import type { FontInfo, FontsPackageInfo } from "./fonts/fontInfo.ts";
 import { getAvailableFonts } from "./fonts/available.ts";
+import type { FontInfo, FontsPackageInfo } from "./fonts/fontInfo.ts";
 import { getFontsPackageInfo } from "./fonts/index.ts";
 import type { FontConfig } from "./types.ts";
 
@@ -44,20 +44,13 @@ export function astroConfigSetup(
 		fontsInfoList.push(fontsInfo);
 
 		for (const variant of fontConfig.variants) {
-			const result = getFontsCss(
-				{ name: variant.name, variants: [variant], outputDirectory },
-				fontsInfo,
-			);
+			const result = getFontsCss({ name: variant.name, variants: [variant], outputDirectory }, fontsInfo);
 
 			const allPackageFonts = getAvailableFonts(fontsInfo.fontsDir);
-			const matchedFonts = allPackageFonts.filter((f) =>
-				result.filenames.includes(f.filename),
-			);
+			const matchedFonts = allPackageFonts.filter((f) => result.filenames.includes(f.filename));
 			availableFonts = availableFonts.concat(matchedFonts);
 
-			logger.info(
-				`Loaded ${matchedFonts.length} font file(s) for ${fontConfig.family} (${variant.name}) from ${source.package}`,
-			);
+			logger.info(`Loaded ${matchedFonts.length} font file(s) for ${fontConfig.family} (${variant.name}) from ${source.package}`);
 		}
 	}
 

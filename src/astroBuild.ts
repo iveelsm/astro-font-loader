@@ -11,12 +11,7 @@ import type { FontInfo } from "./fonts/fontInfo.ts";
  *
  * Copies all available font files to the output directory.
  */
-export function astroBuildDone(
-	dir: URL,
-	logger: AstroIntegrationLogger,
-	outputDirectory: string,
-	availableFonts: FontInfo[],
-): void {
+export function astroBuildDone(dir: URL, logger: AstroIntegrationLogger, outputDirectory: string, availableFonts: FontInfo[]): void {
 	if (availableFonts.length === 0) {
 		return;
 	}

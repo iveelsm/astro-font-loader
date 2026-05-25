@@ -43,15 +43,9 @@ function minifyCss(css: string): string {
  * Matches @font-face blocks by font-family name, weight, and style against the provided variants.
  * Returns the processed CSS and the list of matched font filenames.
  */
-export function getFontsCss(
-	options: GetFontsCssOptions,
-	fontPackageInformation: FontsPackageInfo | null,
-): GetFontsCssResult {
+export function getFontsCss(options: GetFontsCssOptions, fontPackageInformation: FontsPackageInfo | null): GetFontsCssResult {
 	const { name, variants, outputDirectory } = options;
-	if (
-		!fontPackageInformation ||
-		!existsSync(fontPackageInformation.cssPath)
-	) {
+	if (!fontPackageInformation || !existsSync(fontPackageInformation.cssPath)) {
 		return { css: "", filenames: [] };
 	}
 
