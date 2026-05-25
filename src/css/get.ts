@@ -8,10 +8,10 @@ import { transformCss } from "./transform.ts";
  * Options for getting CSS for @font-face
  */
 export type GetFontsCssOptions = {
-	/** Optional filter function to select font files by filename. */
+	/** Filter function to select font files by filename. */
 	filter?: (filename: string) => boolean;
-	/** Optional output directory name. Defaults to "fonts". */
-	outputDir?: string;
+	/** Output directory name. */
+	outputDirectory: string;
 };
 
 /**
@@ -40,10 +40,10 @@ function minifyCss(css: string): string {
  * @returns {string} The processed and minified CSS string, or an empty string if the CSS file is missing or no package info is provided.
  */
 export function getFontsCss(
-	options: GetFontsCssOptions = {},
+	options: GetFontsCssOptions,
 	fontPackageInformation: FontsPackageInfo | null,
 ): string {
-	const { filter, outputDir = "fonts" } = options;
+	const { filter, outputDirectory } = options;
 	if (
 		!fontPackageInformation ||
 		!existsSync(fontPackageInformation.cssPath)
@@ -53,6 +53,6 @@ export function getFontsCss(
 
 	let rawCss = readFileSync(fontPackageInformation.cssPath, "utf-8");
 	rawCss = filterCssFontFaces(rawCss, filter);
-	const transformedCss = transformCss(rawCss, outputDir, filter);
+	const transformedCss = transformCss(rawCss, outputDirectory, filter);
 	return minifyCss(transformedCss);
 }

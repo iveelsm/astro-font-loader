@@ -34,4 +34,13 @@ describe("getFontsPackageInfo", () => {
 			assert.ok(result.cssPath.includes("index.css"));
 		}
 	});
+
+	it("should use custom styleFile when provided", () => {
+		const result = getFontsPackageInfo("astro", undefined, "dist/fonts.css");
+
+		if (result) {
+			assert.ok(result.cssPath.endsWith("dist/fonts.css"));
+			assert.ok(!result.cssPath.endsWith("src/index.css"));
+		}
+	});
 });
