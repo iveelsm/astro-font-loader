@@ -41,15 +41,9 @@ export function astroConfigSetup(
 
 	for (const fontConfig of fonts) {
 		const { source } = fontConfig;
-		const fontsInfo = getFontsPackageInfo(
-			source.package,
-			root,
-			source.styleFile,
-		);
+		const fontsInfo = getFontsPackageInfo(source.package, root, source.styleFile);
 		if (!fontsInfo) {
-			logger.warn(
-				`${source.package} package not found. Skipping ${fontConfig.family}.`,
-			);
+			logger.warn(`${source.package} package not found. Skipping ${fontConfig.family}.`);
 			continue;
 		}
 
