@@ -10,10 +10,7 @@ import { basename } from "node:path";
  * @param {(filename: string) => boolean} [filter] - Optional filter function that receives a font filename and returns true to keep the rule, false to remove it.
  * @returns {string} The filtered CSS string with only the allowed @font-face rules.
  */
-export function filterCssFontFaces(
-	css: string,
-	filter?: (filename: string) => boolean,
-): string {
+export function filterCssFontFaces(css: string, filter?: (filename: string) => boolean): string {
 	if (!filter) {
 		return css;
 	}

@@ -5,9 +5,7 @@ import { getFontsPackageInfo } from "../../src/fonts/package";
 
 describe("getFontsPackageInfo", () => {
 	it("should return null for non-existent package", () => {
-		const result = getFontsPackageInfo(
-			"@non-existent/package-that-does-not-exist",
-		);
+		const result = getFontsPackageInfo("@non-existent/package-that-does-not-exist");
 		assert.strictEqual(result, null);
 	});
 
@@ -36,11 +34,7 @@ describe("getFontsPackageInfo", () => {
 	});
 
 	it("should use custom styleFile when provided", () => {
-		const result = getFontsPackageInfo(
-			"astro",
-			undefined,
-			"dist/fonts.css",
-		);
+		const result = getFontsPackageInfo("astro", undefined, "dist/fonts.css");
 
 		if (result) {
 			assert.ok(result.cssPath.endsWith("dist/fonts.css"));

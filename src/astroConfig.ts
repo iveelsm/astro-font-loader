@@ -59,9 +59,7 @@ export function astroConfigSetup(
 			transformedCss += transformCss(rawCss, outputDirectory, filter);
 		}
 
-		logger.info(
-			`Loaded ${packageFonts.length} font file(s) for ${fontConfig.family} from ${source.package}`,
-		);
+		logger.info(`Loaded ${packageFonts.length} font file(s) for ${fontConfig.family} from ${source.package}`);
 	}
 
 	logger.info(`Found ${availableFonts.length} total font file(s) to copy`);

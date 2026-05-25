@@ -19,12 +19,7 @@ export function fontsIntegration(config: FontLoaderConfig): AstroIntegration {
 		name: "astro-font-loader",
 		hooks: {
 			"astro:config:setup": ({ config: astroConfig, logger }) => {
-				const result = astroConfigSetup(
-					logger,
-					fonts,
-					outputDirectory,
-					astroConfig.root,
-				);
+				const result = astroConfigSetup(logger, fonts, outputDirectory, astroConfig.root);
 				availableFonts = result.availableFonts;
 			},
 			"astro:build:done": ({ dir, logger }) => {

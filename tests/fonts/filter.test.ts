@@ -12,11 +12,7 @@ const makeConfig = (variants: FontConfig["variants"]): FontConfig => ({
 
 describe("createVariantFilter", () => {
 	it("should match filename containing variant name (case-insensitive)", () => {
-		const filter = createVariantFilter(
-			makeConfig([
-				{ name: "Roboto-Bold", weight: 700, styles: ["normal"] },
-			]),
-		);
+		const filter = createVariantFilter(makeConfig([{ name: "Roboto-Bold", weight: 700, styles: ["normal"] }]));
 
 		assert.strictEqual(filter("roboto-bold.woff2"), true);
 		assert.strictEqual(filter("Roboto-Bold.woff2"), true);
@@ -24,22 +20,14 @@ describe("createVariantFilter", () => {
 	});
 
 	it("should not match filenames that don't contain variant name", () => {
-		const filter = createVariantFilter(
-			makeConfig([
-				{ name: "Roboto-Bold", weight: 700, styles: ["normal"] },
-			]),
-		);
+		const filter = createVariantFilter(makeConfig([{ name: "Roboto-Bold", weight: 700, styles: ["normal"] }]));
 
 		assert.strictEqual(filter("roboto-regular.woff2"), false);
 		assert.strictEqual(filter("opensans-bold.woff2"), false);
 	});
 
 	it("should only match formats specified in variant (default woff2)", () => {
-		const filter = createVariantFilter(
-			makeConfig([
-				{ name: "Roboto-Bold", weight: 700, styles: ["normal"] },
-			]),
-		);
+		const filter = createVariantFilter(makeConfig([{ name: "Roboto-Bold", weight: 700, styles: ["normal"] }]));
 
 		assert.strictEqual(filter("roboto-bold.woff2"), true);
 		assert.strictEqual(filter("roboto-bold.woff"), false);

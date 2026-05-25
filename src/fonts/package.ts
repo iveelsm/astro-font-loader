@@ -15,11 +15,7 @@ import type { FontsPackageInfo } from "./fontInfo.ts";
  * @param {string} [styleFile] - Optional path to the CSS file relative to the package root. Defaults to "src/index.css".
  * @returns {FontsPackageInfo | null} An object containing the fonts directory and CSS file path, or null if not found.
  */
-export function getFontsPackageInfo(
-	fontsPackage: string,
-	root?: URL | string,
-	styleFile?: string,
-): FontsPackageInfo | null {
+export function getFontsPackageInfo(fontsPackage: string, root?: URL | string, styleFile?: string): FontsPackageInfo | null {
 	try {
 		let requireBase: string;
 		if (root) {
@@ -31,13 +27,9 @@ export function getFontsPackageInfo(
 		}
 
 		const require = createRequire(requireBase);
-		const fontsPackagePath = require.resolve(
-			`${fontsPackage}/package.json`,
-		);
+		const fontsPackagePath = require.resolve(`${fontsPackage}/package.json`);
 		const fontsDir = dirname(fontsPackagePath);
-		const cssPath = styleFile
-			? join(fontsDir, styleFile)
-			: join(fontsDir, "src", "index.css");
+		const cssPath = styleFile ? join(fontsDir, styleFile) : join(fontsDir, "src", "index.css");
 		return { fontsDir, cssPath };
 	} catch {
 		return null;

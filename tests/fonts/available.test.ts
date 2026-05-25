@@ -59,10 +59,7 @@ describe("getAvailableFonts", () => {
 		const result = getAvailableFonts(testDir);
 
 		assert.strictEqual(result.length, 1);
-		assert.strictEqual(
-			result[0].relativePath,
-			"Roboto/Roboto-Regular.woff2",
-		);
+		assert.strictEqual(result[0].relativePath, "Roboto/Roboto-Regular.woff2");
 	});
 
 	it("should include correct relative paths for fonts in root src", () => {

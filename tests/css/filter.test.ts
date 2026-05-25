@@ -8,8 +8,7 @@ import { filterCssFontFaces } from "../../src/css/filter";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const fixturesDir = join(__dirname, "fixtures");
-const loadFixture = (name: string) =>
-	readFileSync(join(fixturesDir, name), "utf-8").trim();
+const loadFixture = (name: string) => readFileSync(join(fixturesDir, name), "utf-8").trim();
 
 describe("filterCssFontFaces", () => {
 	const sampleCss = loadFixture("sample.css");
@@ -34,8 +33,7 @@ describe("filterCssFontFaces", () => {
 	});
 
 	it("should keep only font-face blocks matching the filter", () => {
-		const filter = (filename: string) =>
-			filename === "OpenSans-Regular.woff2";
+		const filter = (filename: string) => filename === "OpenSans-Regular.woff2";
 		const result = filterCssFontFaces(sampleCss, filter);
 
 		assert.ok(result.includes("OpenSans-Regular.woff2"));

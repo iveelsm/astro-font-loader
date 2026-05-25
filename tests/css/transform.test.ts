@@ -8,8 +8,7 @@ import { transformCss } from "../../src/css/transform";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const fixturesDir = join(__dirname, "fixtures");
-const loadFixture = (name: string) =>
-	readFileSync(join(fixturesDir, name), "utf-8").trim();
+const loadFixture = (name: string) => readFileSync(join(fixturesDir, name), "utf-8").trim();
 
 describe("transformCss", () => {
 	const sampleCss = loadFixture("mixed-quotes.css");

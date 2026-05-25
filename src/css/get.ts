@@ -39,15 +39,9 @@ function minifyCss(css: string): string {
  * @param {FontsPackageInfo | null} fontPackageInformation - Information about the font package, including the CSS file path.
  * @returns {string} The processed and minified CSS string, or an empty string if the CSS file is missing or no package info is provided.
  */
-export function getFontsCss(
-	options: GetFontsCssOptions,
-	fontPackageInformation: FontsPackageInfo | null,
-): string {
+export function getFontsCss(options: GetFontsCssOptions, fontPackageInformation: FontsPackageInfo | null): string {
 	const { filter, outputDirectory } = options;
-	if (
-		!fontPackageInformation ||
-		!existsSync(fontPackageInformation.cssPath)
-	) {
+	if (!fontPackageInformation || !existsSync(fontPackageInformation.cssPath)) {
 		return "";
 	}
 
