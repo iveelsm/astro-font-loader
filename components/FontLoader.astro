@@ -1,11 +1,8 @@
 ---
-import {
-	getFontsPackageInfo,
-	getAvailableFonts,
-	getFontsCss,
-	createVariantFilter,
-} from 'astro-font-loader';
-import type { FontVariant, FontSource } from 'astro-font-loader';
+import { getFontsPackageInfo, getAvailableFonts } from '../src/fonts/index.ts';
+import { createVariantFilter } from '../src/fonts/filter.ts';
+import { getFontsCss } from '../src/css/get.ts';
+import type { FontVariant, FontSource } from '../src/types.ts';
 
 interface Props {
 	/** The font variant to load. */
