@@ -10,9 +10,7 @@ import type { FontLoaderConfig } from "./types.ts";
  *
  * Sets up hooks for Astro's config and build phases to process font files and CSS.
  */
-export function fontsIntegration(
-	config: FontLoaderConfig,
-): AstroIntegration {
+export function fontsIntegration(config: FontLoaderConfig): AstroIntegration {
 	const { fonts, outputDirectory } = config;
 
 	let availableFonts: FontInfo[] = [];

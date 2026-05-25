@@ -4,9 +4,7 @@ import { describe, it } from "node:test";
 import { createVariantFilter } from "../../src/fonts/filter";
 import type { FontConfig } from "../../src/types";
 
-const makeConfig = (
-	variants: FontConfig["variants"],
-): FontConfig => ({
+const makeConfig = (variants: FontConfig["variants"]): FontConfig => ({
 	family: "Test",
 	source: { type: "package", package: "test-pkg" },
 	variants,
