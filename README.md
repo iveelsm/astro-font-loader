@@ -5,15 +5,13 @@
 
 `astro-font-loader` hooks into the astro build process to copy selected fonts from installed font packages into the local build artifacts.
 
-## Why Use This Instead of Built-in Astro Fonts?
-
-Astro includes built-in font support, but it has limitations that can impact performance optimization. These are exceptional cases and should not be considered standard.
-
-> [!INFO]
-> The first is that there are **no controls over output file paths.** Astro's built-in font handling places font files in hashed, opaque paths. This makes it difficult to configure [Early Hints](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Link) (`103` responses) or `Link` headers since you can't predict the final font URLs ahead of time. You end up writing a custom build script anyways to create predictable paths in this case.
-> The second is that there is **no media query support for font loading.** There is no way to conditionally load fonts based on viewport size (e.g., `min-width` media queries). This means all font weights and variants are downloaded on every device, even if they're only used on larger screens.
-
-`astro-font-loader` was originally designed as a package based font solution, but continues due to these two limitations.
+> [!NOTE]
+> **Why use this instead of the built-in Astro Fonts API?** <br><br>
+> `astro-font-loader` was originally designed as a package based font solution, but continues due to two limitations.
+>
+> The first is that there are *no controls over output file paths.* Astro's built-in font handling places font files in hashed, opaque paths. This makes it difficult to configure [Early Hints](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Link) (`103` responses) or `Link` headers since you can't predict the final font URLs ahead of time. You end up writing a custom build script anyways to create predictable paths in this case.
+>
+> The second is that there is *no media query support for font loading.* There is no way to conditionally load fonts based on viewport size (e.g., `min-width` media queries). This means all font weights and variants are downloaded on every device, even if they're only used on larger screens.
 
 ## Installation
 
