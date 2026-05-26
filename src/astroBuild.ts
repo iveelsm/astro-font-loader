@@ -10,23 +10,13 @@ import type { FontInfo } from "./fonts/fontInfo.ts";
  * Handles the build completion phase for font loading.
  *
  * Copies all available font files to the output directory.
- *
- * @param {URL} dir - The build output directory URL.
- * @param {AstroIntegrationLogger} logger - The Astro integration logger for outputting messages.
- * @param {string} outputDir - The output directory name for font files.
- * @param {FontInfo[]} availableFonts - Array of font files to copy.
  */
-export function astroBuildDone(
-	dir: URL,
-	logger: AstroIntegrationLogger,
-	outputDir: string,
-	availableFonts: FontInfo[],
-): void {
+export function astroBuildDone(dir: URL, logger: AstroIntegrationLogger, outputDirectory: string, availableFonts: FontInfo[]): void {
 	if (availableFonts.length === 0) {
 		return;
 	}
 
-	const outputPath = fileURLToPath(new URL(outputDir, dir));
+	const outputPath = fileURLToPath(new URL(outputDirectory, dir));
 	if (!existsSync(outputPath)) {
 		mkdirSync(outputPath, { recursive: true });
 	}
@@ -41,7 +31,5 @@ export function astroBuildDone(
 		}
 	}
 
-	logger.info(
-		`Copied ${availableFonts.length} font file(s) to ${outputDir}/`,
-	);
+	logger.info(`Copied ${availableFonts.length} font file(s) to ${outputDirectory}/`);
 }

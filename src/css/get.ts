@@ -1,24 +1,32 @@
 import { existsSync, readFileSync } from "node:fs";
 
 import type { FontsPackageInfo } from "../fonts/index.ts";
-import { filterCssFontFaces } from "./filter.ts";
+import type { FontVariant } from "../types.ts";
+import { matchCssFontFaces } from "./filter.ts";
 import { transformCss } from "./transform.ts";
 
 /**
  * Options for getting CSS for @font-face
  */
 export type GetFontsCssOptions = {
-	/** Optional filter function to select font files by filename. */
-	filter?: (filename: string) => boolean;
-	/** Optional output directory name. Defaults to "fonts". */
-	outputDir?: string;
+	/** The CSS font-family name to match. */
+	name: string;
+	/** Variants to match by weight and style. */
+	variants: FontVariant[];
+	/** Output directory name. */
+	outputDirectory: string;
+};
+
+/**
+ * Result of CSS processing, including matched CSS and font filenames.
+ */
+export type GetFontsCssResult = {
+	css: string;
+	filenames: string[];
 };
 
 /**
  * Minifies a CSS string by removing comments, extra whitespace, and newlines.
- *
- * @param css - The CSS string to minify.
- * @returns The minified CSS string.
  */
 function minifyCss(css: string): string {
 	return css
@@ -30,29 +38,19 @@ function minifyCss(css: string): string {
 }
 
 /**
- * Loads, filters, and transforms the CSS for font-face rules from a font package.
+ * Loads, matches, and transforms the CSS for @font-face rules from a font package.
  *
- * Reads the CSS file specified in the font package information, applies an optional filter to @font-face rules,
- * and transforms the CSS for output. Returns an empty string if no font package information is provided or the CSS file does not exist.
- *
- * @param {GetFontsCssOptions} [options={}] - Options including filter and output directory.
- * @param {FontsPackageInfo | null} fontPackageInformation - Information about the font package, including the CSS file path.
- * @returns {string} The processed and minified CSS string, or an empty string if the CSS file is missing or no package info is provided.
+ * Matches @font-face blocks by font-family name, weight, and style against the provided variants.
+ * Returns the processed CSS and the list of matched font filenames.
  */
-export function getFontsCss(
-	options: GetFontsCssOptions = {},
-	fontPackageInformation: FontsPackageInfo | null,
-): string {
-	const { filter, outputDir = "fonts" } = options;
-	if (
-		!fontPackageInformation ||
-		!existsSync(fontPackageInformation.cssPath)
-	) {
-		return "";
+export function getFontsCss(options: GetFontsCssOptions, fontPackageInformation: FontsPackageInfo | null): GetFontsCssResult {
+	const { name, variants, outputDirectory } = options;
+	if (!fontPackageInformation || !existsSync(fontPackageInformation.cssPath)) {
+		return { css: "", filenames: [] };
 	}
 
-	let rawCss = readFileSync(fontPackageInformation.cssPath, "utf-8");
-	rawCss = filterCssFontFaces(rawCss, filter);
-	const transformedCss = transformCss(rawCss, outputDir, filter);
-	return minifyCss(transformedCss);
+	const rawCss = readFileSync(fontPackageInformation.cssPath, "utf-8");
+	const matched = matchCssFontFaces(rawCss, name, variants);
+	const transformedCss = transformCss(matched.css, outputDirectory);
+	return { css: minifyCss(transformedCss), filenames: matched.filenames };
 }

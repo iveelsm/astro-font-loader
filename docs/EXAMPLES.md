@@ -1,221 +1,253 @@
-# Example Package Uses
+# Examples
 
-## FontLoader Component
-
-The `FontLoader` component is the recommended way to load fonts. It handles both `@font-face` CSS injection and preload link generation in a single component.
-
-### Basic Usage
-
-```astro
----
-import FontLoader from 'astro-font-loader/FontLoader.astro';
----
-<html>
-  <head>
-    <FontLoader packages={['@company/design-system-fonts']} />
-  </head>
-  <body><slot /></body>
-</html>
-```
-
-### With Filtering
-
-```astro
----
-import FontLoader from 'astro-font-loader/FontLoader.astro';
-
-const fontFilter = (filename: string) => {
-  const name = filename.toLowerCase();
-  return name.includes("hatton") || name.includes("berkeleymono");
-};
----
-<FontLoader
-  packages={['@company/design-system-fonts']}
-  filter={fontFilter}
-/>
-```
-
-### Selective Preloading with Media Queries
-
-Preload only critical fonts, and use media queries to defer non-essential fonts on smaller screens:
-
-```astro
----
-import FontLoader from 'astro-font-loader/FontLoader.astro';
-import type { PreloadConfig } from 'astro-font-loader';
-
-const fontFilter = (filename: string) =>
-  filename.toLowerCase().includes("hatton") ||
-  filename.toLowerCase().includes("berkeleymono");
-
-const preloadConfig: PreloadConfig[] = [
-  {
-    // Always preload the primary body and mono fonts
-    filter: (f) => f.includes('hatton-medium') || f.includes('berkeleymono-regular'),
-  },
-  {
-    // Only preload bold weight on desktop
-    filter: (f) => f.includes('hatton-bold'),
-    media: '(min-width: 641px)',
-  },
-];
----
-<FontLoader
-  packages={['@company/design-system-fonts']}
-  filter={fontFilter}
-  preload={preloadConfig}
-/>
-```
-
-### Disabling Preloading
-
-If you want only the `@font-face` CSS without any preload links:
-
-```astro
-<FontLoader
-  packages={['@company/design-system-fonts']}
-  preload={false}
-/>
-```
-
----
-
-## Advanced: Manual Function Usage
-
-For cases where the `FontLoader` component doesn't fit (e.g., dynamic per-page font loading or custom rendering logic), you can use the underlying functions directly.
-
-### Inline Font CSS in Astro Component
-
-```astro
----
-import { getFontsCss, getFontsPackageInfo } from "astro-font-loader";
-
-const fontFilter = (filename: string) => {
-  const name = filename.toLowerCase();
-  return name.includes("hatton") || name.includes("berkeleymono");
-};
-
-const packageInfo = getFontsPackageInfo("@company/design-system-fonts");
-const fontsCss = getFontsCss(
-  { filter: fontFilter },
-  packageInfo,
-);
----
-
-{fontsCss && <style is:inline set:html={fontsCss} />}
-```
-
-### Preload Critical Fonts
-
-```astro
----
-import { getFontsPackageInfo, getAvailableFonts } from "astro-font-loader";
-
-const packageInfo = getFontsPackageInfo("@company/design-system-fonts");
-const preloadFonts = packageInfo
-  ? getAvailableFonts(packageInfo.fontsDir).filter((font) =>
-      [
-        "hatton-medium.woff2",
-        "berkeleymono-regular.woff2",
-        "berkeleymono-italic.woff2",
-      ].some((name) => font.filename.toLowerCase().includes(name))
-    )
-  : [];
----
-
-{
-  preloadFonts.map((font) => (
-    <link
-      rel="preload"
-      href={`/fonts/${font.filename}`}
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-  ))
-}
-```
-
-### Dynamic Font Loading with Multiple Filters
-
-Load different fonts based on page context:
-
-```astro
----
-import { getFontsCss, getFontsPackageInfo } from "astro-font-loader";
-
-const { fontSet = "default" } = Astro.props;
-
-const filters = {
-  default: (filename: string) =>
-    filename.toLowerCase().includes("hatton-medium"),
-
-  headings: (filename: string) => {
-    const name = filename.toLowerCase();
-    return name.includes("hatton-bold") || name.includes("hatton-medium");
-  },
-
-  code: (filename: string) =>
-    filename.toLowerCase().includes("berkeleymono"),
-};
-
-const packageInfo = getFontsPackageInfo("@company/design-system-fonts");
-const fontsCss = getFontsCss(
-  { filter: filters[fontSet] || filters.default },
-  packageInfo,
-);
----
-
-{fontsCss && <style is:inline set:html={fontsCss} />}
-```
-
-### Combining Integration with Manual Control
-
-Use the integration for build-time copying and manual functions for runtime optimization:
-
-**In `astro.config.ts`:**
+## Basic Integration Setup
 
 ```typescript
+// astro.config.mjs
 import { defineConfig } from 'astro/config';
 import { fontsIntegration } from 'astro-font-loader';
 
 export default defineConfig({
   integrations: [
     fontsIntegration({
-      packages: ["@company/design-system-fonts"],
+      outputDirectory: "fonts",
+      fonts: [
+        {
+          family: "Roboto",
+          source: { type: "package", package: "@fontsource/roboto" },
+          variants: [
+            { name: "Roboto", weight: 400, styles: ["normal"] },
+            { name: "Roboto", weight: 700, styles: ["normal"] },
+          ],
+        },
+      ],
     }),
   ],
 });
 ```
 
-**In your layout component:**
+---
+
+## FontLoader Component
+
+### Basic Usage
+
+A single `<FontLoader>` handles all your fonts — it matches `@font-face` rules from the package CSS by `font-family`, `font-weight`, and `font-style`, inlines the CSS, and emits preload links.
 
 ```astro
 ---
-import { getFontsPackageInfo, getAvailableFonts } from "astro-font-loader";
-
-const packageInfo = getFontsPackageInfo("@company/design-system-fonts");
-const criticalFonts = packageInfo
-  ? getAvailableFonts(packageInfo.fontsDir)
-      .filter(font => font.filename.includes("hatton-medium"))
-      .slice(0, 2)
-  : [];
+import FontLoader from 'astro-font-loader/FontLoader.astro';
 ---
-
 <html>
   <head>
-    {criticalFonts.map((font) => (
-      <link
-        rel="preload"
-        href={`/fonts/${font.filename}`}
-        as="font"
-        type="font/woff2"
-        crossorigin
-      />
-    ))}
+    <FontLoader
+      fonts={[
+        {
+          family: "Roboto",
+          source: { type: "package", package: "@fontsource/roboto" },
+          variants: [
+            { name: "Roboto", weight: 400, styles: ["normal"] },
+            { name: "Roboto", weight: 700, styles: ["normal"] },
+          ],
+        },
+      ]}
+      outputDirectory="fonts"
+      preload={[
+        { variant: "Roboto", weight: 400 },
+      ]}
+    />
   </head>
-  <body>
-    <slot />
-  </body>
+  <body><slot /></body>
 </html>
+```
+
+### Multiple Families with Shared Source
+
+When loading multiple font families from the same package, extract the source to avoid repetition:
+
+```astro
+---
+import FontLoader from 'astro-font-loader/FontLoader.astro';
+
+const source = { type: "package" as const, package: "@company/design-system-fonts" };
+---
+<FontLoader
+  fonts={[
+    {
+      family: "Berkeley Mono",
+      source,
+      variants: [
+        { name: "Berkeley Mono v2 Variable", weight: [100, 900], styles: ["normal", "oblique"] },
+      ],
+    },
+    {
+      family: "EB Garamond",
+      source,
+      variants: [
+        { name: "EB Garamond", weight: 600, styles: ["normal"] },
+        { name: "EB Garamond", weight: 700, styles: ["normal"] },
+      ],
+    },
+  ]}
+  outputDirectory="fonts"
+  preload={[
+    { variant: "Berkeley Mono v2 Variable" },
+    { variant: "EB Garamond", weight: 600 },
+    { variant: "EB Garamond", weight: 700 },
+  ]}
+/>
+```
+
+### Responsive Font Loading with Media Queries
+
+Use `preload` entries with `weight` to target specific variants, and `media` to conditionally preload based on viewport size. Fonts not listed in `preload` still get their `@font-face` CSS — they load normally without being preloaded:
+
+```astro
+---
+import FontLoader from 'astro-font-loader/FontLoader.astro';
+
+const source = { type: "package" as const, package: "@company/design-system-fonts" };
+---
+<FontLoader
+  fonts={[
+    {
+      family: "Berkeley Mono",
+      source,
+      variants: [
+        { name: "Berkeley Mono v2 Variable", weight: [100, 900], styles: ["normal", "oblique"] },
+      ],
+    },
+    {
+      family: "EB Garamond",
+      source,
+      variants: [
+        { name: "EB Garamond", weight: 600, styles: ["normal"] },
+        { name: "EB Garamond", weight: 700, styles: ["normal"] },
+      ],
+    },
+  ]}
+  outputDirectory="fonts"
+  preload={[
+    { variant: "Berkeley Mono v2 Variable" },
+    { variant: "EB Garamond", weight: 600 },
+    { variant: "EB Garamond", weight: 700, media: "(min-width: 641px)" },
+  ]}
+/>
+```
+
+This outputs:
+- A preload link for the Berkeley Mono variable font (always)
+- A preload link for EB Garamond SemiBold (always)
+- A preload link for EB Garamond Bold (desktop only, via media query)
+- Inline `@font-face` CSS for all matched variants
+
+### Wrapping in a Component
+
+For cleaner layouts, wrap your font loading in a dedicated component:
+
+**`src/components/fonts/fonts.astro`**:
+
+```astro
+---
+import FontLoader from "astro-font-loader/FontLoader.astro";
+
+const source = { type: "package" as const, package: "@company/design-system-fonts" };
+---
+
+<FontLoader
+  fonts={[
+    {
+      family: "Berkeley Mono",
+      source,
+      variants: [
+        { name: "Berkeley Mono v2 Variable", weight: [100, 900], styles: ["normal", "oblique"] },
+      ],
+    },
+    {
+      family: "EB Garamond",
+      source,
+      variants: [
+        { name: "EB Garamond", weight: 600, styles: ["normal"] },
+        { name: "EB Garamond", weight: 700, styles: ["normal"] },
+      ],
+    },
+  ]}
+  outputDirectory="fonts"
+  preload={[
+    { variant: "Berkeley Mono v2 Variable" },
+    { variant: "EB Garamond", weight: 600 },
+    { variant: "EB Garamond", weight: 700, media: "(min-width: 641px)" },
+  ]}
+/>
+```
+
+**`src/layouts/Layout.astro`**:
+
+```astro
+---
+import Fonts from '../components/fonts/fonts.astro';
+---
+<html>
+  <head>
+    <Fonts />
+  </head>
+  <body><slot /></body>
+</html>
+```
+
+---
+
+## Variable Fonts
+
+Variable fonts often serve multiple styles from a single file. Use a weight range and list all styles. Duplicate font files are automatically deduplicated in the output:
+
+```typescript
+{
+  family: "Berkeley Mono",
+  source: { type: "package", package: "@company/fonts" },
+  variants: [
+    {
+      name: "Berkeley Mono v2 Variable",
+      weight: [100, 900],
+      styles: ["normal", "oblique"],
+    },
+  ],
+}
+```
+
+## Multiple Formats
+
+By default only `.woff2` files are included from matched `@font-face` rules. To include additional formats:
+
+```typescript
+{
+  family: "Legacy Font",
+  source: { type: "package", package: "@company/fonts" },
+  variants: [
+    {
+      name: "Legacy Font",
+      weight: 400,
+      styles: ["normal"],
+      formats: ["woff2", "woff", "ttf"],
+    },
+  ],
+}
+```
+
+## Custom Style File
+
+If your font package uses a non-standard CSS path:
+
+```typescript
+{
+  family: "Custom Font",
+  source: {
+    type: "package",
+    package: "@company/fonts",
+    styleFile: "dist/fonts.css",  // instead of the default "src/index.css"
+  },
+  variants: [
+    { name: "Custom Font", weight: 400, styles: ["normal"] },
+  ],
+}
 ```

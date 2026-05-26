@@ -5,6 +5,16 @@
 
 `astro-font-loader` hooks into the astro build process to copy selected fonts from installed font packages into the local build artifacts.
 
+## Why Use This Instead of Built-in Astro Fonts?
+
+Astro includes built-in font support, but it has limitations that can impact performance optimization. These are exceptional cases and should not be considered standard.
+
+> [!INFO]
+> The first is that there are **no controls over output file paths.** Astro's built-in font handling places font files in hashed, opaque paths. This makes it difficult to configure [Early Hints](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Link) (`103` responses) or `Link` headers since you can't predict the final font URLs ahead of time. You end up writing a custom build script anyways to create predictable paths in this case.
+> The second is that there is **no media query support for font loading.** There is no way to conditionally load fonts based on viewport size (e.g., `min-width` media queries). This means all font weights and variants are downloaded on every device, even if they're only used on larger screens.
+
+`astro-font-loader` was originally designed as a package based font solution, but continues due to these two limitations.
+
 ## Installation
 
 ```bash
@@ -22,165 +32,159 @@ pnpm add astro-font-loader
 
 1. **Setup Phase**: During Astro's config setup, the integration:
    - Locates the specified font packages in your `node_modules`
-   - Applies the filter function (if provided) to select fonts
-   - Prepares the list of fonts to be copied
+   - Matches `@font-face` rules from the package CSS by `font-family`, `font-weight`, and `font-style`
+   - Prepares the list of font files to be copied
 
 2. **Build Phase**: After Astro completes the build:
-   - Copies the filtered font files to the output directory
-   - Transforms CSS imports to reference the copied fonts
+   - Copies the matched font files to the output directory
    - Ensures fonts are available in your production build
 
 ## Usage
 
 ### Basic Setup
 
-Add the integration to your `astro.config.mjs` or `astro.config.ts` file:
+Add the integration to your `astro.config.mjs` or `astro.config.ts` file. The variant `name` should match the `font-family` value in the package's CSS `@font-face` rules:
 
 ```typescript
 import { defineConfig } from 'astro/config';
 import { fontsIntegration } from 'astro-font-loader';
 
 export default defineConfig({
-  site: 'https://example.com',
   integrations: [
     fontsIntegration({
-      packages: ["@company/design-system-fonts"],
+      outputDirectory: "fonts",
+      fonts: [
+        {
+          family: "Roboto",
+          source: { type: "package", package: "@company/design-system-fonts" },
+          variants: [
+            { name: "Roboto", weight: 400, styles: ["normal"] },
+            { name: "Roboto", weight: 700, styles: ["normal"] },
+          ],
+        },
+      ],
     }),
   ],
 });
 ```
 
-### Filtering Fonts
+### Multiple Font Families
 
-Use the `filter` option to selectively include only specific fonts from your font packages. This is useful when you have a large font library but only need certain fonts for your project:
-
-```typescript
-import { defineConfig } from 'astro/config';
-import { fontsIntegration } from 'astro-font-loader';
-
-// Define a filter function to select specific fonts
-const fontFilter = (filename: string) => {
-  const name = filename.toLowerCase();
-  return name.includes("hatton") || 
-         name.includes("berkeleymono");
-};
-
-export default defineConfig({
-  site: 'https://example.com',
-  integrations: [
-    fontsIntegration({
-      packages: ["@company/design-system-fonts"],
-      filter: fontFilter,
-    }),
-  ],
-});
-```
-
-### Custom Output Directory
-
-By default, fonts are copied to a `fonts` directory in your build output. You can customize this:
+A single package can provide multiple font families. Each family gets its own entry in the `fonts` array:
 
 ```typescript
 fontsIntegration({
-  packages: ["@company/design-system-fonts"],
-  filter: fontFilter,
-  outputDir: "assets/fonts", // Custom output directory
+  outputDirectory: "fonts",
+  fonts: [
+    {
+      family: "Berkeley Mono",
+      source: { type: "package", package: "@company/design-system-fonts" },
+      variants: [
+        { name: "Berkeley Mono v2 Variable", weight: [100, 900], styles: ["normal", "oblique"] },
+      ],
+    },
+    {
+      family: "EB Garamond",
+      source: { type: "package", package: "@company/design-system-fonts" },
+      variants: [
+        { name: "EB Garamond", weight: 600, styles: ["normal"] },
+        { name: "EB Garamond", weight: 700, styles: ["normal"] },
+      ],
+    },
+  ],
 })
 ```
 
-### Multiple Font Packages
+### Custom Style File
 
-You can load fonts from multiple packages:
+By default, the integration looks for CSS at `src/index.css` within the package. You can override this with `styleFile`:
 
 ```typescript
-fontsIntegration({
-  packages: [
-    "@company/design-system-fonts",
-    "@fontsource/roboto",
-    "@custom/typefaces"
-  ],
-  filter: (filename) => {
-    // Only include specific fonts from all packages
-    const name = filename.toLowerCase();
-    return name.includes("hatton") ||
-           name.includes("berkeleymono") ||
-           name.includes("roboto-400");
+{
+  family: "Custom Font",
+  source: {
+    type: "package",
+    package: "@company/fonts",
+    styleFile: "dist/fonts.css",
   },
-})
+  variants: [
+    { name: "Custom Font", weight: 400, styles: ["normal"] },
+  ],
+}
 ```
 
 ### FontLoader Component
 
-The library provides a `FontLoader` Astro component that generates `<link rel="preload">` tags and inline `@font-face` CSS for your fonts. Use it alongside the integration — the integration copies font files to the build output, while the component injects the HTML needed to load them.
+The `FontLoader` component generates `<link rel="preload">` tags and inline `@font-face` CSS. Use it alongside the integration — the integration copies font files to the build output, while the component injects the HTML needed to load them.
 
 ```astro
 ---
-// src/layouts/Layout.astro
 import FontLoader from 'astro-font-loader/FontLoader.astro';
+
+const source = { type: "package" as const, package: "@company/design-system-fonts" };
 ---
 <html>
   <head>
-    <FontLoader packages={['@company/design-system-fonts']} />
+    <FontLoader
+      fonts={[
+        {
+          family: "Berkeley Mono",
+          source,
+          variants: [
+            { name: "Berkeley Mono v2 Variable", weight: [100, 900], styles: ["normal", "oblique"] },
+          ],
+        },
+        {
+          family: "EB Garamond",
+          source,
+          variants: [
+            { name: "EB Garamond", weight: 600, styles: ["normal"] },
+            { name: "EB Garamond", weight: 700, styles: ["normal"] },
+          ],
+        },
+      ]}
+      outputDirectory="fonts"
+      preload={[
+        { variant: "Berkeley Mono v2 Variable" },
+        { variant: "EB Garamond", weight: 600 },
+        { variant: "EB Garamond", weight: 700, media: "(min-width: 641px)" },
+      ]}
+    />
   </head>
   <body><slot /></body>
 </html>
 ```
 
-The component accepts the same `filter` and `outputDir` options as the integration:
-
-```astro
----
-import FontLoader from 'astro-font-loader/FontLoader.astro';
-
-const fontFilter = (filename: string) =>
-  filename.toLowerCase().includes('roboto');
----
-<FontLoader
-  packages={['@company/design-system-fonts']}
-  filter={fontFilter}
-  outputDir="assets/fonts"
-/>
-```
-
 #### Selective Preloading with Media Queries
 
-The `preload` prop accepts an array of configurations for fine-grained control over which fonts are preloaded and with what media queries. This is useful for responsive font loading — for example, preloading a bold weight only on desktop:
+The `preload` prop accepts an array of entries that match variants by their CSS `font-family` name, and optionally by `weight` and `styles` for per-variant granularity. Each entry can include an optional `media` query to conditionally preload fonts based on viewport size:
 
-```astro
----
-import FontLoader from 'astro-font-loader/FontLoader.astro';
-
-const fontFilter = (filename: string) =>
-  filename.toLowerCase().includes('roboto');
----
-<FontLoader
-  packages={['@company/design-system-fonts']}
-  filter={fontFilter}
-  preload={[
-    {
-      filter: (f) => f.includes('roboto-regular'),
-    },
-    {
-      filter: (f) => f.includes('roboto-bold'),
-      media: '(min-width: 641px)',
-    },
-  ]}
-/>
+```typescript
+preload={[
+  { variant: "Berkeley Mono v2 Variable" },                    // always preload
+  { variant: "EB Garamond", weight: 600 },                     // always preload semibold
+  { variant: "EB Garamond", weight: 700, media: "(min-width: 641px)" },  // bold on desktop only
+]}
 ```
+
+Fonts matched by an entry in `preload` get a `<link rel="preload">` tag. Fonts not listed in `preload` still get their `@font-face` CSS injected — they load normally without being preloaded.
+
+#### Props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `packages` | `string[]` | (required) | Font package names to load |
-| `filter` | `(filename: string) => boolean` | `undefined` | Filter function to select font files |
-| `outputDir` | `string` | `"fonts"` | Output directory name in generated URLs |
-| `preload` | `boolean \| PreloadConfig[]` | `true` | Whether/how to generate preload link tags |
+| `fonts` | `FontConfig[]` | (required) | Font configurations to load |
+| `outputDirectory` | `string` | (required) | Output directory name in generated URLs |
+| `preload` | `PreloadEntry[]` | `[]` | Variants to preload, with optional weight/style narrowing |
 | `root` | `string` | `process.cwd()` | Root directory for resolving font packages |
 
-**`PreloadConfig`**
+**`PreloadEntry`**
 
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
-| `filter` | `(filename: string) => boolean` | Yes | Filter to select which fonts to preload |
+| `variant` | `string` | Yes | CSS font-family name to match for preloading |
+| `weight` | `number \| [number, number]` | No | Narrow to a specific weight. Omit to match all weights |
+| `styles` | `string[]` | No | Narrow to specific styles. Omit to match all styles |
 | `media` | `string` | No | Media query for the preload link |
 
 ## Additional Documentation

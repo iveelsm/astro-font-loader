@@ -1,27 +1,15 @@
 ---
-import { getFontsPackageInfo, getAvailableFonts, getFontsCss } from 'astro-font-loader';
-
-interface PreloadConfig {
-	/** Filter function to select which fonts to preload. */
-	filter: (filename: string) => boolean;
-	/** Optional media query for the preload link (e.g., "(min-width: 641px)"). */
-	media?: string;
-}
+import { getFontsPackageInfo } from '../src/fonts/index.ts';
+import { getFontsCss } from '../src/css/get.ts';
+import type { FontConfig, PreloadEntry } from '../src/types.ts';
 
 interface Props {
-	/** Array of font package names to load. */
-	packages: string[];
-	/** Optional filter function to select which font files to include in CSS. */
-	filter?: (filename: string) => boolean;
-	/** Output directory name used in generated font URLs. Defaults to "fonts". */
-	outputDir?: string;
-	/**
-	 * Controls preload link generation.
-	 * - `true`: Preload all filtered fonts (default).
-	 * - `false`: No preload links.
-	 * - `PreloadConfig[]`: Selective preloading with optional media queries.
-	 */
-	preload?: boolean | PreloadConfig[];
+	/** Font configurations to load. */
+	fonts: FontConfig[];
+	/** Output directory name used in generated font URLs. */
+	outputDirectory: string;
+	/** Variants to preload, with optional weight/style narrowing and media queries. */
+	preload?: PreloadEntry[];
 	/** Root directory to resolve font packages from. Defaults to process.cwd(). */
 	root?: string;
 }
@@ -39,45 +27,65 @@ function getMimeType(filename: string): string {
 	return MIME_TYPES[ext] ?? 'font/woff2';
 }
 
+function weightEquals(
+	a: number | [number, number],
+	b: number | [number, number],
+): boolean {
+	if (Array.isArray(a) && Array.isArray(b)) {
+		return a[0] === b[0] && a[1] === b[1];
+	}
+	return a === b;
+}
+
 const {
-	packages,
-	filter,
-	outputDir = 'fonts',
-	preload = true,
+	fonts,
+	outputDirectory,
+	preload = [],
 	root = process.cwd(),
 } = Astro.props;
 
-let css = '';
-const seen = new Set<string>();
 const preloadHrefs: Array<{ href: string; type: string; media?: string }> = [];
+const seenHrefs = new Set<string>();
+let allCss = '';
 
-for (const packageName of packages) {
-	const packageInfo = getFontsPackageInfo(packageName, root);
+for (const fontConfig of fonts) {
+	const { source } = fontConfig;
+	const packageInfo = getFontsPackageInfo(source.package, root, source.styleFile);
 	if (!packageInfo) continue;
 
-	css += getFontsCss({ filter, outputDir }, packageInfo);
+	for (const variant of fontConfig.variants) {
+		const result = getFontsCss(
+			{ name: variant.name, variants: [variant], outputDirectory },
+			packageInfo,
+		);
+		allCss += result.css;
 
-	if (preload === true) {
-		let fonts = getAvailableFonts(packageInfo.fontsDir);
-		if (filter) {
-			fonts = fonts.filter((font) => filter(font.filename));
-		}
-		for (const font of fonts) {
-			const href = `/${outputDir}/${font.filename}`;
-			if (!seen.has(href)) {
-				seen.add(href);
-				preloadHrefs.push({ href, type: getMimeType(font.filename) });
+		const entry = preload.find((p) => {
+			if (p.variant.toLowerCase() !== variant.name.toLowerCase()) {
+				return false;
 			}
-		}
-	} else if (Array.isArray(preload)) {
-		const fonts = getAvailableFonts(packageInfo.fontsDir);
-		for (const config of preload) {
-			const matched = fonts.filter((font) => config.filter(font.filename));
-			for (const font of matched) {
-				const href = `/${outputDir}/${font.filename}`;
-				if (!seen.has(href)) {
-					seen.add(href);
-					preloadHrefs.push({ href, type: getMimeType(font.filename), media: config.media });
+
+			if (p.weight !== undefined && !weightEquals(p.weight, variant.weight)) {
+				return false;
+			}
+
+			if (p.styles && !p.styles.every((s) => variant.styles.includes(s))) {
+				return false;
+			}
+
+			return true;
+		});
+
+		if (entry) {
+			for (const filename of result.filenames) {
+				const href = `/${outputDirectory}/${filename}`;
+				if (!seenHrefs.has(href)) {
+					seenHrefs.add(href);
+					preloadHrefs.push({
+						href,
+						type: getMimeType(filename),
+						media: entry.media,
+					});
 				}
 			}
 		}
@@ -88,4 +96,4 @@ for (const packageName of packages) {
 {preloadHrefs.map(({ href, type, media }) => (
 	<link rel="preload" as="font" crossorigin href={href} type={type} media={media} />
 ))}
-{css && <style set:html={css} is:inline />}
+{allCss && <style set:html={allCss} is:inline />}
