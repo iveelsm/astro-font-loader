@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/iveelsm/astro-font-loader/compare/v0.2.3...v0.3.0) (2026-05-26)
+
+
+### Features
+
+* Redesign of Font Loading Interface ([#112](https://github.com/iveelsm/astro-font-loader/issues/112)) ([4cd636e](https://github.com/iveelsm/astro-font-loader/commit/4cd636e8562742a5dc0442c7fb17fc5b492c1459))
+
 ## [0.2.3](https://github.com/iveelsm/astro-font-loader/compare/v0.2.2...v0.2.3) (2026-05-12)
 
 
