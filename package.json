@@ -1,6 +1,6 @@
 {
 	"name": "astro-font-loader",
-	"description": "Loads fonts into astro build artifacts from custom fonts packages",
+	"description": "Astro integration for loading fonts into build artifacts with configurable output paths and media query-based conditional preloading.",
 	"author": "Mikey Sleevi <development@frogman.simplelogin.com>",
 	"license": "MIT",
 	"type": "module",
