@@ -28,7 +28,11 @@
 		"astro-component",
 		"astro-loader",
 		"astro",
+		"font",
 		"fonts",
+		"optimization",
+		"perf",
+		"performance",
 		"plugin"
 	],
 	"homepage": "https://github.com/iveelsm/astro-font-loader#readme",
