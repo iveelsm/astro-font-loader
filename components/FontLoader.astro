@@ -33,6 +33,7 @@ function weightEquals(
 	if (Array.isArray(a) && Array.isArray(b)) {
 		return a[0] === b[0] && a[1] === b[1];
 	}
+
 	return a === b;
 }
 
@@ -50,7 +51,9 @@ let allCss = '';
 for (const fontConfig of fonts) {
 	const { source } = fontConfig;
 	const packageInfo = getFontsPackageInfo(source.package, root, source.styleFile);
-	if (!packageInfo) continue;
+	if (!packageInfo) {
+		continue;
+	}
 
 	for (const variant of fontConfig.variants) {
 		const result = getFontsCss(

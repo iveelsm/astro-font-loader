@@ -1,23 +1,20 @@
 import type { AstroIntegrationLogger } from "astro";
 
-import { getFontsCss } from "./css/get.ts";
-import { getAvailableFonts } from "./fonts/available.ts";
-import type { FontInfo, FontsPackageInfo } from "./fonts/fontInfo.ts";
-import { getFontsPackageInfo } from "./fonts/index.ts";
+import type { FontInfo } from "./fonts/fontInfo.ts";
+import { createFontProvider } from "./providers/index.ts";
 import type { FontConfig } from "./types.ts";
 
 /**
  * Result of the configuration setup for font loading.
  */
 export type ConfigSetupResult = {
-	fontsInfoList: FontsPackageInfo[];
 	availableFonts: FontInfo[];
 };
 
 /**
  * Sets up font configuration for the Astro integration.
  *
- * Resolves font packages, collects available fonts by matching CSS metadata.
+ * Resolves font providers and collects available fonts by matching CSS metadata.
  */
 export function astroConfigSetup(
 	logger: AstroIntegrationLogger,
@@ -25,36 +22,29 @@ export function astroConfigSetup(
 	outputDirectory: string,
 	root?: URL,
 ): ConfigSetupResult {
-	const fontsInfoList: FontsPackageInfo[] = [];
 	let availableFonts: FontInfo[] = [];
 
 	if (!fonts || fonts.length === 0) {
 		logger.warn("No fonts specified. Fonts will not be copied.");
-		return { fontsInfoList: [], availableFonts };
+		return { availableFonts };
 	}
 
 	for (const fontConfig of fonts) {
-		const { source } = fontConfig;
-		const fontsInfo = getFontsPackageInfo(source.package, root, source.styleFile);
-		if (!fontsInfo) {
-			logger.warn(`${source.package} package not found. Skipping ${fontConfig.family}.`);
+		const provider = createFontProvider(fontConfig.source, root);
+		if (!provider) {
+			logger.warn(`Could not resolve font source for ${fontConfig.family}. Skipping.`);
 			continue;
 		}
 
-		fontsInfoList.push(fontsInfo);
-
 		for (const variant of fontConfig.variants) {
-			const result = getFontsCss({ name: variant.name, variants: [variant], outputDirectory }, fontsInfo);
+			const result = provider.resolveVariant(variant, outputDirectory);
+			availableFonts = availableFonts.concat(result.fonts);
 
-			const allPackageFonts = getAvailableFonts(fontsInfo.fontsDir);
-			const matchedFonts = allPackageFonts.filter((f) => result.filenames.includes(f.filename));
-			availableFonts = availableFonts.concat(matchedFonts);
-
-			logger.info(`Loaded ${matchedFonts.length} font file(s) for ${fontConfig.family} (${variant.name}) from ${source.package}`);
+			logger.info(`Loaded ${result.fonts.length} font file(s) for ${fontConfig.family} (${variant.name})`);
 		}
 	}
 
 	logger.info(`Found ${availableFonts.length} total font file(s) to copy`);
 
-	return { fontsInfoList, availableFonts };
+	return { availableFonts };
 }

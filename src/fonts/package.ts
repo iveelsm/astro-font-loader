@@ -20,7 +20,6 @@ export function getFontsPackageInfo(fontsPackage: string, root?: URL | string, s
 		let requireBase: string;
 		if (root) {
 			const rootPath = root instanceof URL ? fileURLToPath(root) : root;
-
 			requireBase = join(rootPath, "package.json");
 		} else {
 			requireBase = import.meta.url;
