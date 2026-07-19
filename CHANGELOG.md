@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/iveelsm/astro-font-loader/compare/v0.3.2...v0.4.0) (2026-07-19)
+
+
+### Features
+
+* **providers:** Establishing a clearer provider pattern for the font loading ([#171](https://github.com/iveelsm/astro-font-loader/issues/171)) ([f451b08](https://github.com/iveelsm/astro-font-loader/commit/f451b0881da71a029b8596d9357386ef3d7f6d72))
+
 ## [0.3.2](https://github.com/iveelsm/astro-font-loader/compare/v0.3.1...v0.3.2) (2026-06-06)
 
 
