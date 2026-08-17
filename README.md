@@ -41,7 +41,7 @@ pnpm add astro-font-loader
 
 ### Basic Setup
 
-Add the integration to your `astro.config.mjs` or `astro.config.ts` file. The variant `name` should match the `font-family` value in the package's CSS `@font-face` rules:
+Add the integration to your `astro.config.mjs` or `astro.config.ts` file. The variant `name` should match the `font-family` value in the package's CSS `@font-face` rules. As such, it's implied that you write the CSS for your fonts and their are contained within the project.
 
 ```typescript
 import { defineConfig } from 'astro/config';
@@ -68,7 +68,7 @@ export default defineConfig({
 
 ### Multiple Font Families
 
-A single package can provide multiple font families. Each family gets its own entry in the `fonts` array:
+A single package can provide multiple font families. Each family gets its own entry in the `fonts` array.
 
 ```typescript
 fontsIntegration({
@@ -95,7 +95,7 @@ fontsIntegration({
 
 ### Custom Style File
 
-By default, the integration looks for CSS at `src/index.css` within the package. You can override this with `styleFile`:
+By default, the integration looks for CSS at `src/index.css` within the package. You can override this with `styleFile`.
 
 ```typescript
 {
@@ -113,7 +113,7 @@ By default, the integration looks for CSS at `src/index.css` within the package.
 
 ### FontLoader Component
 
-The `FontLoader` component generates `<link rel="preload">` tags and inline `@font-face` CSS. Use it alongside the integration — the integration copies font files to the build output, while the component injects the HTML needed to load them.
+The `FontLoader` component generates `<link rel="preload">` tags and inline `@font-face` CSS. It is one half of the integration. The astro integration copies font files to the build output, while the component injects the HTML needed to load them.
 
 ```astro
 ---
@@ -159,13 +159,13 @@ The `preload` prop accepts an array of entries that match variants by their CSS 
 
 ```typescript
 preload={[
-  { variant: "Berkeley Mono v2 Variable" },                    // always preload
-  { variant: "EB Garamond", weight: 600 },                     // always preload semibold
+  { variant: "Berkeley Mono v2 Variable" },                              // always preload
+  { variant: "EB Garamond", weight: 600 },                               // always preload semibold
   { variant: "EB Garamond", weight: 700, media: "(min-width: 641px)" },  // bold on desktop only
 ]}
 ```
 
-Fonts matched by an entry in `preload` get a `<link rel="preload">` tag. Fonts not listed in `preload` still get their `@font-face` CSS injected — they load normally without being preloaded.
+Fonts matched by an entry in `preload` get a `<link rel="preload">` tag. Fonts not listed in `preload` still get their `@font-face` CSS injected.
 
 #### Props
 

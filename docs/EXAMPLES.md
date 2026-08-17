@@ -32,7 +32,7 @@ export default defineConfig({
 
 ### Basic Usage
 
-A single `<FontLoader>` handles all your fonts — it matches `@font-face` rules from the package CSS by `font-family`, `font-weight`, and `font-style`, inlines the CSS, and emits preload links.
+A single `<FontLoader>` handles all your fonts for a page. It matches `@font-face` rules from the package CSS by `font-family`, `font-weight`, and `font-style`, inlines the CSS, and emits preload links.
 
 ```astro
 ---
@@ -63,7 +63,7 @@ import FontLoader from 'astro-font-loader/FontLoader.astro';
 
 ### Multiple Families with Shared Source
 
-When loading multiple font families from the same package, extract the source to avoid repetition:
+When loading multiple font families from the same package, extract the source to avoid repetition.
 
 ```astro
 ---
@@ -100,7 +100,7 @@ const source = { type: "package" as const, package: "@company/design-system-font
 
 ### Responsive Font Loading with Media Queries
 
-Use `preload` entries with `weight` to target specific variants, and `media` to conditionally preload based on viewport size. Fonts not listed in `preload` still get their `@font-face` CSS — they load normally without being preloaded:
+Use `preload` entries with `weight` to target specific variants, and `media` to conditionally preload based on viewport size. Fonts not listed in `preload` still get their `@font-face` CSS.
 
 ```astro
 ---
@@ -135,15 +135,9 @@ const source = { type: "package" as const, package: "@company/design-system-font
 />
 ```
 
-This outputs:
-- A preload link for the Berkeley Mono variable font (always)
-- A preload link for EB Garamond SemiBold (always)
-- A preload link for EB Garamond Bold (desktop only, via media query)
-- Inline `@font-face` CSS for all matched variants
-
 ### Wrapping in a Component
 
-For cleaner layouts, wrap your font loading in a dedicated component:
+For cleaner layouts, wrap your font loading in a dedicated component.
 
 **`src/components/fonts/fonts.astro`**:
 
@@ -199,7 +193,7 @@ import Fonts from '../components/fonts/fonts.astro';
 
 ## Variable Fonts
 
-Variable fonts often serve multiple styles from a single file. Use a weight range and list all styles. Duplicate font files are automatically deduplicated in the output:
+Variable fonts often serve multiple styles from a single file. Use a weight range and list all styles. Duplicate font files are automatically deduplicated in the output.
 
 ```typescript
 {
@@ -217,7 +211,7 @@ Variable fonts often serve multiple styles from a single file. Use a weight rang
 
 ## Multiple Formats
 
-By default only `.woff2` files are included from matched `@font-face` rules. To include additional formats:
+By default only `.woff2` files are included from matched `@font-face` rules. To include additional formats add them to the formats array.
 
 ```typescript
 {
@@ -236,7 +230,7 @@ By default only `.woff2` files are included from matched `@font-face` rules. To 
 
 ## Custom Style File
 
-If your font package uses a non-standard CSS path:
+If your font package uses a non-standard CSS path, adjust the `styleFile` parameter in the source.
 
 ```typescript
 {

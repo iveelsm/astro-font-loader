@@ -14,7 +14,7 @@ Creates an Astro integration for automatic font loading during the build process
 
 #### Returns
 
-`AstroIntegration` - An Astro integration object that hooks into the build process.
+- **`AstroIntegration`**: An Astro integration object that hooks into the build process.
 
 #### Example
 
@@ -109,11 +109,9 @@ Duplicate font files (e.g., a variable font serving both `normal` and `oblique` 
 Top-level configuration for the integration.
 
 ```typescript
-import type { FontLoaderConfig } from 'astro-font-loader';
-
 type FontLoaderConfig = {
-  outputDirectory: string;
-  fonts: FontConfig[];
+  outputDirectory: string; // location to output the provider sourced font files
+  fonts: FontConfig[];     // font configuration to retrieve
 };
 ```
 
@@ -122,12 +120,10 @@ type FontLoaderConfig = {
 Configuration for a single font family.
 
 ```typescript
-import type { FontConfig } from 'astro-font-loader';
-
 type FontConfig = {
-  family: string;
-  source: FontSource;
-  variants: FontVariant[];
+  family: string;          // family name, should match font-family in the CSS
+  source: FontSource;      // location to derive the font file from
+  variants: FontVariant[]; // variants of the font to download
 };
 ```
 
@@ -156,15 +152,8 @@ import type { FontVariant } from 'astro-font-loader';
 
 type FontVariant = {
   name: string;
-  weight: number | [number, number];
-  styles: string[];
-  formats?: string[]; // Defaults to ["woff2"]
+  weight: number | [number, number];  // single value or range for variable fonts
+  styles: string[];                   // font styles to match, e.g. ["normal", "italic"]
+  formats?: string[];                 // Defaults to ["woff2"]
 };
 ```
-
-| Property | Type | Required | Description |
-|----------|------|----------|-------------|
-| `name` | `string` | Yes | CSS `font-family` value to match (case-insensitive) |
-| `weight` | `number \| [number, number]` | Yes | Font weight as a single value or `[min, max]` range for variable fonts |
-| `styles` | `string[]` | Yes | Font styles to match (e.g., `["normal"]`, `["normal", "italic"]`) |
-| `formats` | `string[]` | No | File formats to include from matched rules. Defaults to `["woff2"]` |
